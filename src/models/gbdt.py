@@ -1,0 +1,237 @@
+import warnings
+from typing import Any, Dict, List, Optional, Union
+
+import neptune.new as neptune
+import pandas as pd
+from catboost import CatBoostClassifier, Pool
+from lightgbm import LGBMClassifier
+from neptune.new.integrations import lightgbm, xgboost
+from neptune.new.integrations.lightgbm import create_booster_summary
+from xgboost import XGBClassifier
+
+from models.base import BaseModel
+from utils.utils import LoggerFactory, f1_eval, xgb_f1
+
+logger = LoggerFactory().getLogger(__name__)
+warnings.filterwarnings("ignore")
+
+
+class LightGBMTrainer(BaseModel):
+    def __init__(
+        self,
+        params: Optional[Dict[str, Any]],
+        run: Optional[neptune.init],
+        search: bool = False,
+        **kwargs,
+    ):
+        self.params = params
+        self.run = run
+        self.search = search
+        super().__init__(**kwargs)
+
+    def _get_default_params(self) -> Dict[str, Any]:
+        """
+        setting default parameters
+        Return:
+            LightGBM default parameter
+        """
+
+        return {
+            "n_estimators": 10000,
+            "boosting_type": "gbdt",
+            "objective": "binary",
+            "random_state": 42,
+            "learning_rate": 0.05,
+            "num_leaves": 5,
+            "max_bin": 55,
+            "subsample": 0.8,
+            "min_child_sample": 6,
+            "min_child_weight": 11,
+        }
+
+    def _train(
+        self,
+        X_train: pd.DataFrame,
+        y_train: pd.Series,
+        X_valid: pd.DataFrame,
+        y_valid: pd.Series,
+        fold: int,
+        thershold: float = 0.4,
+        is_search: Union[bool] = False,
+        verbose: Union[bool] = False,
+    ) -> LGBMClassifier:
+        """method train"""
+
+        neptune_callback = (
+            lightgbm.NeptuneCallback(run=self.run, base_namespace=f"fold_{fold}")
+            if is_search is self.search
+            else self.run
+        )
+
+        model = (
+            LGBMClassifier(**self.params)
+            if self.params is not None
+            else LGBMClassifier(**self._get_default_params())
+        )
+
+        model.fit(
+            X_train,
+            y_train,
+            eval_set=[(X_train, y_train), (X_valid, y_valid)],
+            early_stopping_rounds=100,
+            eval_metric=lambda y_true, y_pred: f1_eval(y_true, y_pred, 0.39),
+            verbose=verbose,
+            callbacks=[neptune_callback],
+        )
+
+        if is_search is self.search:
+            # Log summary metadata to the same run under the "lgbm_summary" namespace
+            self.run[f"lgbm_summary/fold_{fold}"] = create_booster_summary(
+                booster=model,
+                y_pred=model.predict(X_valid),
+                y_true=y_valid,
+            )
+
+        return model
+
+
+class XGBoostTrainer(BaseModel):
+    def __init__(
+        self,
+        params: Optional[Dict[str, Any]],
+        run: Optional[neptune.init],
+        search: bool = False,
+        **kwargs,
+    ):
+        self.params = params
+        self.run = run
+        self.search = search
+        super().__init__(**kwargs)
+
+    def _get_default_params(self) -> Dict[str, Any]:
+        """
+        setting default parameters
+        Return:
+            XGBoost default parameter
+        """
+
+        return {
+            "objective": "binary:logistic",
+            "n_estimators": 10000,
+            "random_state": 42,
+            "learning_rate": 0.05,
+            "max_depth": 3,
+            "gamma": 0.0468,
+            "min_child_weight": 1.7817,
+            "reg_alpha": 0.4640,
+            "reg_lambda": 0.8571,
+            "subsample": 0.5213,
+        }
+
+    def _train(
+        self,
+        X_train: pd.DataFrame,
+        y_train: pd.Series,
+        X_valid: pd.DataFrame,
+        y_valid: pd.Series,
+        fold: int,
+        thershold: float = 0.4,
+        is_search: Union[bool] = False,
+        verbose: Union[bool] = False,
+    ) -> XGBClassifier:
+        """method train"""
+
+        neptune_callback = (
+            xgboost.NeptuneCallback(
+                run=self.run,
+                base_namespace=f"fold_{fold}",
+                log_tree=[0, 1, 2, 3],
+                max_num_features=10,
+            )
+            if is_search is self.search
+            else self.run
+        )
+
+        model = (
+            XGBClassifier(**self.params)
+            if self.params is not None
+            else XGBClassifier(**self._get_default_params())
+        )
+
+        model.fit(
+            X_train,
+            y_train,
+            eval_set=[(X_train, y_train), (X_valid, y_valid)],
+            early_stopping_rounds=100,
+            eval_metric=lambda y_true, y_pred: xgb_f1(y_true, y_pred, thershold),
+            verbose=verbose,
+            callbacks=[neptune_callback],
+        )
+
+        return model
+
+
+class CatBoostTrainer(BaseModel):
+    def __init__(
+        self,
+        params: Optional[Dict[str, Any]],
+        cat_features: Optional[List[str]],
+        search: bool = False,
+        **kwargs,
+    ):
+        self.params = params
+        self.search = search
+        self.cat_features = cat_features
+        super().__init__(**kwargs)
+
+    def _get_default_params(self) -> Dict[str, Any]:
+        """
+        setting default parameters
+        Return:
+            NGBoost default parameter
+        """
+        return {
+            "learning_rate": 0.03,
+            "l2_leaf_reg": 20,
+            "depth": 4,
+            "bootstrap_type": "Bernoulli",
+            "subsample": 0.6,
+            "random_state": 42,
+            "eval_metric": "RMSE",
+            "loss_function": "RMSE",
+            "od_type": "Iter",
+            "od_wait": 45,
+            "iterations": 10000,
+            "cat_features": self.cat_features,
+        }
+
+    def _train(
+        self,
+        X_train: pd.DataFrame,
+        y_train: pd.Series,
+        X_valid: pd.DataFrame,
+        y_valid: pd.Series,
+        fold: int,
+        thershold: float = 0.5,
+        is_search: Union[bool] = False,
+        verbose: Union[bool] = False,
+    ) -> CatBoostClassifier:
+        """method train"""
+        train_data = Pool(data=X_train, label=y_train, cat_features=self.cat_features)
+        valid_data = Pool(data=X_valid, label=y_valid, cat_features=self.cat_features)
+
+        model = (
+            CatBoostClassifier(**self.params)
+            if self.params is not None
+            else CatBoostClassifier(**self._get_default_params())
+        )
+
+        model.fit(
+            train_data,
+            eval_set=valid_data,
+            early_stopping_rounds=100,
+            use_best_model=True,
+            verbose=verbose,
+        )
+
+        return model

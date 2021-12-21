@@ -1,0 +1,250 @@
+from typing import List, Tuple
+
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+
+tqdm.pandas()
+
+
+def add_code(
+    df: pd.DataFrame, d_code: pd.DataFrame, h_code: pd.DataFrame, l_code: pd.DataFrame
+) -> pd.DataFrame:
+    df = df.copy()
+    # D Code
+    df["person_prefer_d_1_n"] = df["person_prefer_d_1"].apply(
+        lambda x: d_code[x]["속성 D 세분류코드"]
+    )
+    df["person_prefer_d_1_n"] = df["person_prefer_d_1_n"].astype(int)
+
+    df["person_prefer_d_1_s"] = df["person_prefer_d_1"].apply(
+        lambda x: d_code[x]["속성 D 소분류코드"]
+    )
+    df["person_prefer_d_1_s"] = df["person_prefer_d_1_s"].astype(int)
+
+    df["person_prefer_d_1_m"] = df["person_prefer_d_1"].apply(
+        lambda x: d_code[x]["속성 D 중분류코드"]
+    )
+    df["person_prefer_d_1_m"] = df["person_prefer_d_1_m"].astype(int)
+
+    df["person_prefer_d_1_l"] = df["person_prefer_d_1"].apply(
+        lambda x: d_code[x]["속성 D 대분류코드"]
+    )
+    df["person_prefer_d_1_l"] = df["person_prefer_d_1_l"].astype(int)
+
+    df["person_prefer_d_2_n"] = df["person_prefer_d_2"].apply(
+        lambda x: d_code[x]["속성 D 세분류코드"]
+    )
+    df["person_prefer_d_2_n"] = df["person_prefer_d_2_n"].astype(int)
+
+    df["person_prefer_d_2_s"] = df["person_prefer_d_2"].apply(
+        lambda x: d_code[x]["속성 D 소분류코드"]
+    )
+    df["person_prefer_d_2_s"] = df["person_prefer_d_2_s"].astype(int)
+
+    df["person_prefer_d_2_m"] = df["person_prefer_d_2"].apply(
+        lambda x: d_code[x]["속성 D 중분류코드"]
+    )
+    df["person_prefer_d_2_m"] = df["person_prefer_d_2_m"].astype(int)
+
+    df["person_prefer_d_2_l"] = df["person_prefer_d_2"].apply(
+        lambda x: d_code[x]["속성 D 대분류코드"]
+    )
+    df["person_prefer_d_2_l"] = df["person_prefer_d_2_l"].astype(int)
+
+    df["person_prefer_d_3_n"] = df["person_prefer_d_3"].apply(
+        lambda x: d_code[x]["속성 D 세분류코드"]
+    )
+    df["person_prefer_d_3_n"] = df["person_prefer_d_3_n"].astype(int)
+
+    df["person_prefer_d_3_s"] = df["person_prefer_d_3"].apply(
+        lambda x: d_code[x]["속성 D 소분류코드"]
+    )
+    df["person_prefer_d_3_s"] = df["person_prefer_d_3_s"].astype(int)
+
+    df["person_prefer_d_3_m"] = df["person_prefer_d_3"].apply(
+        lambda x: d_code[x]["속성 D 중분류코드"]
+    )
+    df["person_prefer_d_3_m"] = df["person_prefer_d_3_m"].astype(int)
+
+    df["person_prefer_d_3_l"] = df["person_prefer_d_3"].apply(
+        lambda x: d_code[x]["속성 D 대분류코드"]
+    )
+    df["person_prefer_d_3_l"] = df["person_prefer_d_3_l"].astype(int)
+
+    df["contents_attribute_d_n"] = df["contents_attribute_d"].apply(
+        lambda x: d_code[x]["속성 D 세분류코드"]
+    )
+    df["contents_attribute_d_n"] = df["contents_attribute_d_n"].astype(int)
+
+    df["contents_attribute_d_s"] = df["contents_attribute_d"].apply(
+        lambda x: d_code[x]["속성 D 소분류코드"]
+    )
+    df["contents_attribute_d_s"] = df["contents_attribute_d_s"].astype(int)
+
+    df["contents_attribute_d_m"] = df["contents_attribute_d"].apply(
+        lambda x: d_code[x]["속성 D 중분류코드"]
+    )
+    df["contents_attribute_d_m"] = df["contents_attribute_d_m"].astype(int)
+
+    df["contents_attribute_d_l"] = df["contents_attribute_d"].apply(
+        lambda x: d_code[x]["속성 D 대분류코드"]
+    )
+    df["contents_attribute_d_l"] = df["contents_attribute_d_l"].astype(int)
+
+    # H Code
+    df["person_prefer_h_1_u"] = df["person_prefer_h_1"].apply(
+        lambda x: h_code[x]["속성 H 상위코드"]
+    )
+    df["person_prefer_h_1_u"] = df["person_prefer_h_1_u"].astype(int)
+
+    df["person_prefer_h_2_u"] = df["person_prefer_h_2"].apply(
+        lambda x: h_code[x]["속성 H 상위코드"]
+    )
+    df["person_prefer_h_2_u"] = df["person_prefer_h_2_u"].astype(int)
+
+    df["person_prefer_h_3_u"] = df["person_prefer_h_3"].apply(
+        lambda x: h_code[x]["속성 H 상위코드"]
+    )
+    df["person_prefer_h_3_u"] = df["person_prefer_h_3_u"].astype(int)
+
+    df["contents_attribute_h_u"] = df["contents_attribute_h"].apply(
+        lambda x: h_code[x]["속성 H 상위코드"]
+    )
+    df["contents_attribute_h_u"] = df["contents_attribute_h_u"].astype(int)
+
+    # L Code
+    df["contents_attribute_l_n"] = df["contents_attribute_l"].apply(
+        lambda x: l_code[x]["속성 L 세분류코드"]
+    )
+    df["contents_attribute_l_n"] = df["contents_attribute_l_n"].astype(int)
+
+    df["contents_attribute_l_s"] = df["contents_attribute_l"].apply(
+        lambda x: l_code[x]["속성 L 소분류코드"]
+    )
+    df["contents_attribute_l_s"] = df["contents_attribute_l_s"].astype(int)
+
+    df["contents_attribute_l_m"] = df["contents_attribute_l"].apply(
+        lambda x: l_code[x]["속성 L 중분류코드"]
+    )
+    df["contents_attribute_l_m"] = df["contents_attribute_l_m"].astype(int)
+
+    df["contents_attribute_l_l"] = df["contents_attribute_l"].apply(
+        lambda x: l_code[x]["속성 L 대분류코드"]
+    )
+    df["contents_attribute_l_l"] = df["contents_attribute_l_l"].astype(int)
+
+    return df
+
+
+def preprocess_data(
+    df: pd.DataFrame,
+    is_train: bool = True,
+    cols_merge: List[Tuple[str, pd.DataFrame]] = [],
+    cols_equi: List[Tuple[str, str]] = [],
+    cols_drop: List[str] = [
+        "id",
+        "person_prefer_f",
+        "person_prefer_g",
+        "contents_open_dt",
+    ],
+) -> Tuple[pd.DataFrame, np.ndarray]:
+    df = df.copy()
+
+    y_data = None
+    if is_train:
+        y_data = df["target"]
+        df = df.drop(columns="target")
+
+    for col, df_code in cols_merge:
+        df = merge_codes(df, df_code, col)
+
+    cols = df.select_dtypes(bool).columns.tolist()
+    df[cols] = df[cols].astype(int)
+
+    for col1, col2 in cols_equi:
+        df[f"{col1}_{col2}"] = (df[col1] == df[col2]).astype(int)
+
+    df = df.drop(columns=cols_drop)
+    return df, y_data
+
+
+def merge_codes(df: pd.DataFrame, df_code: pd.DataFrame, col: str) -> pd.DataFrame:
+    df = df.copy()
+    df_code = df_code.copy()
+    df_code = df_code.add_prefix(f"{col}_")
+    df_code.columns.values[0] = col
+    return pd.merge(df, df_code, how="left", on=col)
+
+
+def load_dataset(path: str) -> Tuple[pd.DataFrame]:
+    train = pd.read_csv(path + "train.csv")
+    test = pd.read_csv(path + "test.csv")
+    code_d = pd.read_csv(path + "속성_D_코드.csv").iloc[:, :-1]
+    code_h = pd.read_csv(path + "속성_H_코드.csv")
+    code_l = pd.read_csv(path + "속성_L_코드.csv")
+
+    code_d.columns = [
+        "attribute_d",
+        "attribute_d_d",
+        "attribute_d_s",
+        "attribute_d_m",
+        "attribute_d_l",
+    ]
+    code_h.columns = ["attribute_h", "attribute_h_p"]
+    code_l.columns = [
+        "attribute_l",
+        "attribute_l_d",
+        "attribute_l_s",
+        "attribute_l_m",
+        "attribute_l_l",
+    ]
+    # 소분류 중분류 대분류 속성코드 merge 컬럼명 및 데이터 프레임 리스트
+    cols_merge = [
+        ("person_prefer_d_1", code_d),
+        ("person_prefer_d_2", code_d),
+        ("person_prefer_d_3", code_d),
+        ("contents_attribute_d", code_d),
+        ("person_prefer_h_1", code_h),
+        ("person_prefer_h_2", code_h),
+        ("person_prefer_h_3", code_h),
+        ("contents_attribute_h", code_h),
+        ("contents_attribute_l", code_l),
+    ]
+
+    # 회원 속성과 콘텐츠 속성의 동일한 코드 여부에 대한 컬럼명 리스트
+    cols_equi = [
+        ("contents_attribute_c", "person_prefer_c"),
+        ("contents_attribute_e", "person_prefer_e"),
+        ("person_prefer_d_2_attribute_d_s", "contents_attribute_d_attribute_d_s"),
+        ("person_prefer_d_2_attribute_d_m", "contents_attribute_d_attribute_d_m"),
+        ("person_prefer_d_2_attribute_d_l", "contents_attribute_d_attribute_d_l"),
+        ("person_prefer_d_3_attribute_d_s", "contents_attribute_d_attribute_d_s"),
+        ("person_prefer_d_3_attribute_d_m", "contents_attribute_d_attribute_d_m"),
+        ("person_prefer_d_3_attribute_d_l", "contents_attribute_d_attribute_d_l"),
+        ("person_prefer_h_1_attribute_h_p", "contents_attribute_h_attribute_h_p"),
+        ("person_prefer_h_2_attribute_h_p", "contents_attribute_h_attribute_h_p"),
+        ("person_prefer_h_3_attribute_h_p", "contents_attribute_h_attribute_h_p"),
+    ]
+
+    # 학습에 필요없는 컬럼 리스트
+    cols_drop = [
+        "id",
+        "person_prefer_f",
+        "person_prefer_g",
+        "contents_open_dt",
+        "contents_rn",
+    ]
+
+    train, target = preprocess_data(
+        train, cols_merge=cols_merge, cols_equi=cols_equi, cols_drop=cols_drop
+    )
+    test, _ = preprocess_data(
+        test,
+        is_train=False,
+        cols_merge=cols_merge,
+        cols_equi=cols_equi,
+        cols_drop=cols_drop,
+    )
+
+    return train, test, target

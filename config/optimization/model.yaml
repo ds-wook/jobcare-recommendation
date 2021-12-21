@@ -1,0 +1,26 @@
+dataset:
+  path: ../input/job-recommendation
+  submit: sample_submission.csv
+  test: test.csv
+  train: train.csv
+  target: target
+experiment:
+  project: ds-wook/dacon-project
+  tags:
+    lightgbm:
+    - LightGBM
+    - KFold
+    - 잡케어
+    - Optimization
+    xgboost:
+    - XGBoost
+    - KFold
+    - 잡케어
+    - Optimization
+optimization:
+  trials: 100
+  params: best_params.yaml
+model:
+  fold: 5
+  threshold: 0.4
+  select: lightgbm
