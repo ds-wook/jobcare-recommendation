@@ -1,5 +1,5 @@
 dataset:
-  path: ../input/job-recommendation
+  path: ../input/jobcare-recommendation
   submit: sample_submission.csv
   test: test.csv
   train: train.csv

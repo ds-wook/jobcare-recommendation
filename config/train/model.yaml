@@ -44,7 +44,7 @@ dataset:
   - contents_attribute_l_attribute_l_s
   - contents_attribute_l_attribute_l_m
   - contents_attribute_l_attribute_l_l
-  path: ../input/job-recommendation
+  path: ../input/jobcare-recommendation
   submit: sample_submission.csv
   test: test.csv
   train: train.csv
