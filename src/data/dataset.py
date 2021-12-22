@@ -7,147 +7,16 @@ from tqdm import tqdm
 tqdm.pandas()
 
 
-def add_code(
-    df: pd.DataFrame, d_code: pd.DataFrame, h_code: pd.DataFrame, l_code: pd.DataFrame
-) -> pd.DataFrame:
-    df = df.copy()
-    # D Code
-    df["person_prefer_d_1_n"] = df["person_prefer_d_1"].apply(
-        lambda x: d_code[x]["속성 D 세분류코드"]
-    )
-    df["person_prefer_d_1_n"] = df["person_prefer_d_1_n"].astype(int)
-
-    df["person_prefer_d_1_s"] = df["person_prefer_d_1"].apply(
-        lambda x: d_code[x]["속성 D 소분류코드"]
-    )
-    df["person_prefer_d_1_s"] = df["person_prefer_d_1_s"].astype(int)
-
-    df["person_prefer_d_1_m"] = df["person_prefer_d_1"].apply(
-        lambda x: d_code[x]["속성 D 중분류코드"]
-    )
-    df["person_prefer_d_1_m"] = df["person_prefer_d_1_m"].astype(int)
-
-    df["person_prefer_d_1_l"] = df["person_prefer_d_1"].apply(
-        lambda x: d_code[x]["속성 D 대분류코드"]
-    )
-    df["person_prefer_d_1_l"] = df["person_prefer_d_1_l"].astype(int)
-
-    df["person_prefer_d_2_n"] = df["person_prefer_d_2"].apply(
-        lambda x: d_code[x]["속성 D 세분류코드"]
-    )
-    df["person_prefer_d_2_n"] = df["person_prefer_d_2_n"].astype(int)
-
-    df["person_prefer_d_2_s"] = df["person_prefer_d_2"].apply(
-        lambda x: d_code[x]["속성 D 소분류코드"]
-    )
-    df["person_prefer_d_2_s"] = df["person_prefer_d_2_s"].astype(int)
-
-    df["person_prefer_d_2_m"] = df["person_prefer_d_2"].apply(
-        lambda x: d_code[x]["속성 D 중분류코드"]
-    )
-    df["person_prefer_d_2_m"] = df["person_prefer_d_2_m"].astype(int)
-
-    df["person_prefer_d_2_l"] = df["person_prefer_d_2"].apply(
-        lambda x: d_code[x]["속성 D 대분류코드"]
-    )
-    df["person_prefer_d_2_l"] = df["person_prefer_d_2_l"].astype(int)
-
-    df["person_prefer_d_3_n"] = df["person_prefer_d_3"].apply(
-        lambda x: d_code[x]["속성 D 세분류코드"]
-    )
-    df["person_prefer_d_3_n"] = df["person_prefer_d_3_n"].astype(int)
-
-    df["person_prefer_d_3_s"] = df["person_prefer_d_3"].apply(
-        lambda x: d_code[x]["속성 D 소분류코드"]
-    )
-    df["person_prefer_d_3_s"] = df["person_prefer_d_3_s"].astype(int)
-
-    df["person_prefer_d_3_m"] = df["person_prefer_d_3"].apply(
-        lambda x: d_code[x]["속성 D 중분류코드"]
-    )
-    df["person_prefer_d_3_m"] = df["person_prefer_d_3_m"].astype(int)
-
-    df["person_prefer_d_3_l"] = df["person_prefer_d_3"].apply(
-        lambda x: d_code[x]["속성 D 대분류코드"]
-    )
-    df["person_prefer_d_3_l"] = df["person_prefer_d_3_l"].astype(int)
-
-    df["contents_attribute_d_n"] = df["contents_attribute_d"].apply(
-        lambda x: d_code[x]["속성 D 세분류코드"]
-    )
-    df["contents_attribute_d_n"] = df["contents_attribute_d_n"].astype(int)
-
-    df["contents_attribute_d_s"] = df["contents_attribute_d"].apply(
-        lambda x: d_code[x]["속성 D 소분류코드"]
-    )
-    df["contents_attribute_d_s"] = df["contents_attribute_d_s"].astype(int)
-
-    df["contents_attribute_d_m"] = df["contents_attribute_d"].apply(
-        lambda x: d_code[x]["속성 D 중분류코드"]
-    )
-    df["contents_attribute_d_m"] = df["contents_attribute_d_m"].astype(int)
-
-    df["contents_attribute_d_l"] = df["contents_attribute_d"].apply(
-        lambda x: d_code[x]["속성 D 대분류코드"]
-    )
-    df["contents_attribute_d_l"] = df["contents_attribute_d_l"].astype(int)
-
-    # H Code
-    df["person_prefer_h_1_u"] = df["person_prefer_h_1"].apply(
-        lambda x: h_code[x]["속성 H 상위코드"]
-    )
-    df["person_prefer_h_1_u"] = df["person_prefer_h_1_u"].astype(int)
-
-    df["person_prefer_h_2_u"] = df["person_prefer_h_2"].apply(
-        lambda x: h_code[x]["속성 H 상위코드"]
-    )
-    df["person_prefer_h_2_u"] = df["person_prefer_h_2_u"].astype(int)
-
-    df["person_prefer_h_3_u"] = df["person_prefer_h_3"].apply(
-        lambda x: h_code[x]["속성 H 상위코드"]
-    )
-    df["person_prefer_h_3_u"] = df["person_prefer_h_3_u"].astype(int)
-
-    df["contents_attribute_h_u"] = df["contents_attribute_h"].apply(
-        lambda x: h_code[x]["속성 H 상위코드"]
-    )
-    df["contents_attribute_h_u"] = df["contents_attribute_h_u"].astype(int)
-
-    # L Code
-    df["contents_attribute_l_n"] = df["contents_attribute_l"].apply(
-        lambda x: l_code[x]["속성 L 세분류코드"]
-    )
-    df["contents_attribute_l_n"] = df["contents_attribute_l_n"].astype(int)
-
-    df["contents_attribute_l_s"] = df["contents_attribute_l"].apply(
-        lambda x: l_code[x]["속성 L 소분류코드"]
-    )
-    df["contents_attribute_l_s"] = df["contents_attribute_l_s"].astype(int)
-
-    df["contents_attribute_l_m"] = df["contents_attribute_l"].apply(
-        lambda x: l_code[x]["속성 L 중분류코드"]
-    )
-    df["contents_attribute_l_m"] = df["contents_attribute_l_m"].astype(int)
-
-    df["contents_attribute_l_l"] = df["contents_attribute_l"].apply(
-        lambda x: l_code[x]["속성 L 대분류코드"]
-    )
-    df["contents_attribute_l_l"] = df["contents_attribute_l_l"].astype(int)
-
-    return df
+def euclidean_distance(user: int, content: int) -> float:
+    return np.sqrt(np.sum((user - content) ** 2))
 
 
 def preprocess_data(
     df: pd.DataFrame,
+    cols_merge: List[Tuple[str, pd.DataFrame]],
+    cols_equi: List[Tuple[str, str]],
+    cols_drop: List[str],
     is_train: bool = True,
-    cols_merge: List[Tuple[str, pd.DataFrame]] = [],
-    cols_equi: List[Tuple[str, str]] = [],
-    cols_drop: List[str] = [
-        "id",
-        "person_prefer_f",
-        "person_prefer_g",
-        "contents_open_dt",
-    ],
 ) -> Tuple[pd.DataFrame, np.ndarray]:
     df = df.copy()
 
@@ -163,7 +32,7 @@ def preprocess_data(
     df[cols] = df[cols].astype(int)
 
     for col1, col2 in cols_equi:
-        df[f"{col1}_{col2}"] = (df[col1] == df[col2]).astype(int)
+        df[f"{col1}_{col2}"] = (df[col1] == df[col2]).astype(np.int8)
 
     df = df.drop(columns=cols_drop)
     return df, y_data
@@ -241,10 +110,10 @@ def load_dataset(path: str) -> Tuple[pd.DataFrame]:
     )
     test, _ = preprocess_data(
         test,
-        is_train=False,
         cols_merge=cols_merge,
         cols_equi=cols_equi,
         cols_drop=cols_drop,
+        is_train=False,
     )
 
     return train, test, target

@@ -62,7 +62,7 @@ def _main(cfg: DictConfig):
             metric=f1_score,
         )
         xgb_trainer.train(train_x, train_y, cfg.model.threshold, cfg.model.verbose)
-        xgb_preds = xgb_trainer.predict(test_x, threshold=cfg.model.thershold)
+        xgb_preds = xgb_trainer.predict(test_x, threshold=cfg.model.threshold)
         xgb_preds_proba = xgb_trainer.predict_proba(test_x)
 
         # Save test predictions
@@ -81,7 +81,7 @@ def _main(cfg: DictConfig):
             metric=f1_score,
         )
         cb_trainer.train(train_x, train_y, cfg.model.threshold, cfg.model.verbose)
-        cb_preds = cb_trainer.predict(test_x, threshold=cfg.model.thershold)
+        cb_preds = cb_trainer.predict(test_x, threshold=cfg.model.threshold)
         cb_preds_proba = cb_trainer.predict_proba(test_x)
 
         # Save test predictions
