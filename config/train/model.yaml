@@ -70,7 +70,6 @@ model:
       eval_metric: F1
       loss_function: Logloss
       iterations: 10000
-      random_strength: 1
       cat_features:
       - person_attribute_a_1
       - person_attribute_b

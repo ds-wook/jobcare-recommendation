@@ -45,7 +45,11 @@ def _main(cfg: DictConfig):
         train["oof_preds"] = lgbm_oof.oof_preds
         train[["id", "target", "oof_preds"]].to_csv(path + "lgbm_oof.csv", index=False)
         submission[cfg.dataset.target] = lgbm_preds_proba
-        submission.to_csv(submit_path + "5fold_lightgbm_proba.csv", index=False)
+        submission.to_csv(
+            submit_path
+            + f"{cfg.model.fold}fold_{cfg.model.select}_proba_{cfg.model.threshold}.csv",
+            index=False,
+        )
 
     elif model_name == "xgboost":
         # make experiment tracking
@@ -69,7 +73,11 @@ def _main(cfg: DictConfig):
         submission[cfg.dataset.target] = xgb_preds
         submission.to_csv(submit_path + cfg.submit.name, index=False)
         submission[cfg.dataset.target] = xgb_preds_proba
-        submission.to_csv(submit_path + "5fold_xgboost_proba.csv", index=False)
+        submission.to_csv(
+            submit_path
+            + f"{cfg.model.fold}fold_{cfg.model.select}_proba_{cfg.model.threshold}.csv",
+            index=False,
+        )
 
     elif model_name == "catboost":
         # model train
@@ -80,15 +88,23 @@ def _main(cfg: DictConfig):
             threshold=cfg.model.threshold,
             metric=f1_score,
         )
-        cb_trainer.train(train_x, train_y, cfg.model.threshold, cfg.model.verbose)
+        cb_oof = cb_trainer.train(
+            train_x, train_y, cfg.model.threshold, cfg.model.verbose
+        )
+
         cb_preds = cb_trainer.predict(test_x, threshold=cfg.model.threshold)
         cb_preds_proba = cb_trainer.predict_proba(test_x)
-
+        train["oof_preds"] = cb_oof.oof_preds
+        train[["id", "target", "oof_preds"]].to_csv(path + "cb_oof.csv", index=False)
         # Save test predictions
         submission[cfg.dataset.target] = cb_preds
         submission.to_csv(submit_path + cfg.submit.name, index=False)
         submission[cfg.dataset.target] = cb_preds_proba
-        submission.to_csv(submit_path + "5fold_catboost_proba.csv", index=False)
+        submission.to_csv(
+            submit_path
+            + f"{cfg.model.fold}fold_{cfg.model.select}_proba_{cfg.model.threshold}.csv",
+            index=False,
+        )
 
     else:
         raise NotImplementedError

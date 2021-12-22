@@ -7,10 +7,6 @@ from tqdm import tqdm
 tqdm.pandas()
 
 
-def euclidean_distance(user: int, content: int) -> float:
-    return np.sqrt(np.sum((user - content) ** 2))
-
-
 def preprocess_data(
     df: pd.DataFrame,
     cols_merge: List[Tuple[str, pd.DataFrame]],

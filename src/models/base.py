@@ -136,14 +136,10 @@ class BaseModel:
         folds = self.fold
         preds_proba = np.zeros(test_x.shape[0])
 
-        logger.info(f"oof score: {self.result.scores['oof_score']}")
-        logger.info("Inference Start!")
-
         for fold in tqdm(range(1, folds + 1)):
             model = self.result.models[f"fold_{fold}"]
             preds_proba += model.predict_proba(test_x)[:, 1] / folds
 
         assert len(preds_proba) == len(test_x)
-        logger.info("Inference Finish!\n")
 
         return preds_proba
