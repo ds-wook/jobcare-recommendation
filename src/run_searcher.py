@@ -34,7 +34,7 @@ def _main(cfg: DictConfig):
             trials=cfg.experiment.trials,
             direction=cfg.experiment.direction,
         )
-        study = bayesian_optim.build_study(trials=cfg.experiment.trials)
+        study = bayesian_optim.build_study()
         bayesian_optim.lgbm_save_params(study, cfg.experiment.params)
 
     elif model_name == "xgboost":
@@ -57,7 +57,7 @@ def _main(cfg: DictConfig):
             trials=cfg.experiment.trials,
             direction=cfg.experiment.direction,
         )
-        study = bayesian_optim.build_study(trials=cfg.experiment.trials)
+        study = bayesian_optim.build_study()
         bayesian_optim.xgb_save_params(study, cfg.experiment.params)
 
     else:
