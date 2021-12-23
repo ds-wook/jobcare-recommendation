@@ -19,6 +19,7 @@ def _main(cfg: DictConfig):
             project=cfg.experiment.project,
             tags=list(cfg.experiment.tags.lightgbm),
         )
+
         objective = partial(
             lgbm_objective,
             X=train_x,
@@ -26,15 +27,22 @@ def _main(cfg: DictConfig):
             fold=cfg.model.fold,
             threshold=cfg.model.threshold,
         )
-        bayesian_optim = BayesianOptimizer(objective, run)
-        study = bayesian_optim.build_study(trials=cfg.optimization.trials)
-        bayesian_optim.lgbm_save_params(study, cfg.optimization.params)
+
+        bayesian_optim = BayesianOptimizer(
+            objective_function=objective,
+            run=run,
+            trials=cfg.experiment.trials,
+            direction=cfg.experiment.direction,
+        )
+        study = bayesian_optim.build_study(trials=cfg.experiment.trials)
+        bayesian_optim.lgbm_save_params(study, cfg.experiment.params)
 
     elif model_name == "xgboost":
         run = neptune.init(
             project=cfg.experiment.project,
             tags=list(cfg.experiment.tags.xgboost),
         )
+
         objective = partial(
             xgb_objective,
             X=train_x,
@@ -42,9 +50,15 @@ def _main(cfg: DictConfig):
             fold=cfg.model.fold,
             threshold=cfg.model.threshold,
         )
-        bayesian_optim = BayesianOptimizer(objective, run)
-        study = bayesian_optim.build_study(trials=cfg.optimization.trials)
-        bayesian_optim.xgb_save_params(study, cfg.optimization.params)
+
+        bayesian_optim = BayesianOptimizer(
+            objective_function=objective,
+            run=run,
+            trials=cfg.experiment.trials,
+            direction=cfg.experiment.direction,
+        )
+        study = bayesian_optim.build_study(trials=cfg.experiment.trials)
+        bayesian_optim.xgb_save_params(study, cfg.experiment.params)
 
     else:
         raise NotImplementedError

@@ -1,4 +1,5 @@
 import hydra
+import numpy as np
 import pandas as pd
 from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
@@ -20,6 +21,7 @@ def _main(cfg: DictConfig):
 
     test["left_asymptote"] = 0.25
     submission["target"] = estimate_probas(test, person_parameters, content_parameters)
+    submission["target"] = np.where(submission.target < cfg.model.threshold, 0, 1)
     submission.to_csv(submit_path + cfg.submit.name, index=False)
 
 

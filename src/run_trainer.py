@@ -13,8 +13,9 @@ from models.gbdt import CatBoostTrainer, LightGBMTrainer, XGBoostTrainer
 def _main(cfg: DictConfig):
     path = to_absolute_path(cfg.dataset.path) + "/"
     submit_path = to_absolute_path(cfg.submit.path) + "/"
-
+    train = pd.read_csv(path + "train.csv")
     submission = pd.read_csv(path + cfg.dataset.submit)
+
     model_name = cfg.model.select
     train_x, test_x, train_y = load_dataset(path)
 
@@ -41,7 +42,7 @@ def _main(cfg: DictConfig):
         # Save test predictions
         submission[cfg.dataset.target] = lgbm_preds
         submission.to_csv(submit_path + cfg.submit.name, index=False)
-        train = pd.read_csv(path + "train.csv")
+
         train["oof_preds"] = lgbm_oof.oof_preds
         train[["id", "target", "oof_preds"]].to_csv(path + "lgbm_oof.csv", index=False)
         submission[cfg.dataset.target] = lgbm_preds_proba

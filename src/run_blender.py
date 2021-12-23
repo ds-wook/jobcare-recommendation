@@ -11,11 +11,25 @@ def _main(cfg: DictConfig):
     submit_path = to_absolute_path(cfg.submit.path) + "/"
     submission = pd.read_csv(path + cfg.dataset.submit)
 
-    lightgbm = pd.read_csv(submit_path + "5fold_lightgbm_proba.csv")
-    catboost = pd.read_csv(submit_path + "5fold_catboost_proba.csv")
-    submission["target"] = lightgbm.target * 0.3 + catboost.target * 0.7
+    lightgbm = pd.read_csv(submit_path + "5fold_lightgbm_threshold_0.36.csv")
+    catboost = pd.read_csv(submit_path + "5fold_catboost_threshold_0.4.csv")
+    elo = pd.read_csv(submit_path + "elo_pred.csv")
+    submission["submit_lgb"] = lightgbm.target
+    submission["submit_ctb"] = catboost.target
+    submission["submit_elo"] = elo.target
 
-    submission["target"] = np.where(submission.target < 0.4, 0, 1)
+    submission["target"] = (
+        submission[
+            [col for col in submission.columns if col.startswith("submit_")]
+        ].sum(axis=1)
+        >= 2
+    ).astype(int)
+
+    submission.drop(
+        [col for col in submission.columns if col.startswith("submit_")],
+        axis=1,
+        inplace=True,
+    )
     submission.to_csv(submit_path + cfg.submit.name, index=False)
 
 

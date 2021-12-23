@@ -32,11 +32,15 @@ class BayesianOptimizer:
         self,
         objective_function: Callable[[Trial], Union[float, Sequence[float]]],
         run: Run,
+        trials: FrozenTrial = 100,
+        direction: str = "maximize",
     ):
         self.objective_function = objective_function
         self.run = run
+        self.trials = trials
+        self.direction = direction
 
-    def build_study(self, trials: FrozenTrial, verbose: bool = False):
+    def build_study(self, verbose: bool = False):
         try:
             neptune_callback = optuna_utils.NeptuneCallback(
                 self.run,
@@ -48,14 +52,14 @@ class BayesianOptimizer:
 
             study = optuna.create_study(
                 study_name="TPE Optimization",
-                direction="maximize",
+                direction=self.direction,
                 sampler=sampler,
                 pruner=MedianPruner(n_startup_trials=10, n_warmup_steps=5),
             )
 
             study.optimize(
                 self.objective_function,
-                n_trials=trials,
+                n_trials=self.trials,
                 callbacks=[neptune_callback],
                 timeout=21600,
             )
@@ -64,9 +68,9 @@ class BayesianOptimizer:
         except NeptuneMissingApiTokenException:
             sampler = TPESampler(seed=42)
             study = optuna.create_study(
-                study_name="optimization", direction="maximize", sampler=sampler
+                study_name="optimization", direction=self.direction, sampler=sampler
             )
-            study.optimize(self.objective_function, n_trials=trials)
+            study.optimize(self.objective_function, n_trials=self.trials)
 
         if verbose:
             self.display_study_statistics(study)

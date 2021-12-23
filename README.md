@@ -4,7 +4,7 @@
 ### Benchmark
 |Score|CV|Public LB|Private LB|
 |-----|--|------|-------|
-|LightGBM(5fold-StratifiedKfold)-0.36|0.698|0.691|-|
-|LightGBM(10fold-StratifiedKfold)-0.36|-|-|-|
+|LightGBM(5fold-StratifiedKfold)-0.36|0.690|0.691|-|
+|LightGBM(10fold-StratifiedKfold)-0.36|0.692|-|-|
 |Catboost(5fold-StratifiedKfold)-0.4|0.712|0.698|-|
 |Catboost(10fold-StratifiedKfold)-0.4|-|-|-|

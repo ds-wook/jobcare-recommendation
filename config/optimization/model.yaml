@@ -17,8 +17,8 @@ experiment:
     - KFold
     - 잡케어
     - Optimization
-optimization:
   trials: 100
+  direction: maximize
   params: best_params.yaml
 model:
   fold: 5
