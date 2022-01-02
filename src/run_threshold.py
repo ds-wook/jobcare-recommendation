@@ -7,8 +7,8 @@ submission = pd.read_csv("../input/jobcare-recommendation/sample_submission.csv"
 
 prediction = np.zeros(len(test_x))
 score_ranges = [
-    (0.55, 0.50, 999, 30),  # label 1 min
-    (0.50, 0.45, 2000000, 9),  # label 0
+    (0.6, 0.50, 999, 30),  # label 1 min
+    (0.5, 0.4, 2000000, 9),  # label 0
 ]
 for up, down, seed, random_range in score_ranges:
     indexes = np.where(np.logical_and(score_list[:, 0] < up, score_list[:, 0] > down))[

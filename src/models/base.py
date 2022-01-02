@@ -134,7 +134,7 @@ class BaseModel:
                 preds: inference prediction
         """
         folds = self.fold
-        preds_proba = np.zeros(test_x.shape[0])
+        preds_proba = np.zeros((test_x.shape[0], 2))
 
         for fold in tqdm(range(1, folds + 1)):
             model = self.result.models[f"fold_{fold}"]

@@ -21,3 +21,7 @@
 2022-01-01 12:47:16,879 [models.base|INFO] Inference Start!
 2022-01-01 12:47:20,566 [models.base|INFO] Inference Finish!
 
+2022-01-02 16:37:56,505 [models.base|INFO] oof score: 0.6904847700546153
+2022-01-02 16:37:56,505 [models.base|INFO] Inference Start!
+2022-01-02 16:38:01,692 [models.base|INFO] Inference Finish!
+
