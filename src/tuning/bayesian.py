@@ -61,7 +61,6 @@ class BayesianOptimizer:
                 self.objective_function,
                 n_trials=self.trials,
                 callbacks=[neptune_callback],
-                timeout=21600,
             )
             self.run.stop()
 
@@ -177,7 +176,7 @@ def lgbm_objective(
     )
 
     result = lgbm_trainer.train(X, y)
-    score = f1_score(y, result.oof_preds)
+    score = f1_score(y, result.oof_preds > threshold)
 
     return score
 

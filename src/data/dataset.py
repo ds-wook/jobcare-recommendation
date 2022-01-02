@@ -45,7 +45,7 @@ def merge_codes(df: pd.DataFrame, df_code: pd.DataFrame, col: str) -> pd.DataFra
 def load_dataset(path: str) -> Tuple[pd.DataFrame]:
     train = pd.read_csv(path + "train.csv")
     test = pd.read_csv(path + "test.csv")
-    code_d = pd.read_csv(path + "속성_D_코드.csv").iloc[:, :-1]
+    code_d = pd.read_csv(path + "속성_D_코드.csv")
     code_h = pd.read_csv(path + "속성_H_코드.csv")
     code_l = pd.read_csv(path + "속성_L_코드.csv")
 
@@ -56,7 +56,7 @@ def load_dataset(path: str) -> Tuple[pd.DataFrame]:
         "attribute_d_m",
         "attribute_d_l",
     ]
-    code_h.columns = ["attribute_h", "attribute_h_p"]
+    code_h.columns = ["attribute_h", "attribute_h_l", "attribute_h_m"]
     code_l.columns = [
         "attribute_l",
         "attribute_l_d",
@@ -87,9 +87,12 @@ def load_dataset(path: str) -> Tuple[pd.DataFrame]:
         ("person_prefer_d_3_attribute_d_s", "contents_attribute_d_attribute_d_s"),
         ("person_prefer_d_3_attribute_d_m", "contents_attribute_d_attribute_d_m"),
         ("person_prefer_d_3_attribute_d_l", "contents_attribute_d_attribute_d_l"),
-        ("person_prefer_h_1_attribute_h_p", "contents_attribute_h_attribute_h_p"),
-        ("person_prefer_h_2_attribute_h_p", "contents_attribute_h_attribute_h_p"),
-        ("person_prefer_h_3_attribute_h_p", "contents_attribute_h_attribute_h_p"),
+        ("person_prefer_h_1_attribute_h_m", "contents_attribute_h_attribute_h_m"),
+        ("person_prefer_h_2_attribute_h_m", "contents_attribute_h_attribute_h_m"),
+        ("person_prefer_h_3_attribute_h_m", "contents_attribute_h_attribute_h_m"),
+        ("person_prefer_h_1_attribute_h_l", "contents_attribute_h_attribute_h_l"),
+        ("person_prefer_h_2_attribute_h_l", "contents_attribute_h_attribute_h_l"),
+        ("person_prefer_h_3_attribute_h_l", "contents_attribute_h_attribute_h_l"),
     ]
 
     # 학습에 필요없는 컬럼 리스트

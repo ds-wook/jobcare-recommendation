@@ -83,9 +83,9 @@ class BaseModel:
             models[f"fold_{fold}"] = model
 
             # validation
-            oof_preds[valid_idx] = model.predict_proba(X_valid)[:, 1]
+            oof_preds[valid_idx] = model.predict_proba(X_valid)[:, 0]
 
-            score = self.metric(y_valid.values, oof_preds[valid_idx] > thershold)
+            score = self.metric(y_valid.values, oof_preds[valid_idx] < thershold)
             scores[f"fold_{fold}"] = score
             gc.collect()
 
@@ -101,7 +101,7 @@ class BaseModel:
 
         return self.result
 
-    def predict(self, test_x: pd.DataFrame, threshold: float = 0.5) -> np.ndarray:
+    def predict(self, test_x: pd.DataFrame, threshold: float = 0.4) -> np.ndarray:
         """
         Predict data
             Parameter:
@@ -119,7 +119,7 @@ class BaseModel:
             model = self.result.models[f"fold_{fold}"]
             preds += model.predict_proba(test_x)[:, 1] / folds
 
-        preds = np.where(preds < threshold, 0, 1)
+        preds = np.where(preds > threshold, 0, 1)
         assert len(preds) == len(test_x)
         logger.info("Inference Finish!\n")
 
@@ -138,7 +138,7 @@ class BaseModel:
 
         for fold in tqdm(range(1, folds + 1)):
             model = self.result.models[f"fold_{fold}"]
-            preds_proba += model.predict_proba(test_x)[:, 1] / folds
+            preds_proba += model.predict_proba(test_x) / folds
 
         assert len(preds_proba) == len(test_x)
 
