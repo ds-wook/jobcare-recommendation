@@ -118,8 +118,8 @@ def f1_eval(
 
 
 def xgb_f1(
-    pred: np.ndarray, dtrain: np.ndarray, thershold: float = 0.4
+    pred: np.ndarray, dtrain: np.ndarray, threshold: float = 0.4
 ) -> Tuple[Union[str, float]]:
     y_true = dtrain.get_label()
-    y_pred = (pred > thershold).astype(np.int8)
+    y_pred = (pred > threshold).astype(np.int8)
     return "f1", f1_score(y_pred, y_true)

@@ -21,11 +21,13 @@ class LightGBMTrainer(BaseModel):
         self,
         params: Optional[Dict[str, Any]],
         run: Optional[neptune.init],
+        seed: int = 42,
         search: bool = False,
         **kwargs,
     ):
         self.params = params
         self.run = run
+        self.seed = seed
         self.search = search
         super().__init__(**kwargs)
 
@@ -40,7 +42,6 @@ class LightGBMTrainer(BaseModel):
             "n_estimators": 10000,
             "boosting_type": "gbdt",
             "objective": "binary",
-            "random_state": 42,
             "learning_rate": 0.05,
             "num_leaves": 5,
             "max_bin": 55,
@@ -56,7 +57,7 @@ class LightGBMTrainer(BaseModel):
         X_valid: pd.DataFrame,
         y_valid: pd.Series,
         fold: int,
-        thershold: float = 0.4,
+        threshold: float = 0.4,
         is_search: Union[bool] = False,
         verbose: Union[bool] = False,
     ) -> LGBMClassifier:
@@ -69,9 +70,9 @@ class LightGBMTrainer(BaseModel):
         )
 
         model = (
-            LGBMClassifier(**self.params)
+            LGBMClassifier(random_state=self.seed, **self.params)
             if self.params is not None
-            else LGBMClassifier(**self._get_default_params())
+            else LGBMClassifier(random_state=self.seed, **self._get_default_params())
         )
 
         model.fit(
@@ -79,7 +80,7 @@ class LightGBMTrainer(BaseModel):
             y_train,
             eval_set=[(X_train, y_train), (X_valid, y_valid)],
             early_stopping_rounds=100,
-            eval_metric=lambda y_true, y_pred: f1_eval(y_true, y_pred, 0.39),
+            eval_metric=lambda y_true, y_pred: f1_eval(y_true, y_pred, threshold),
             verbose=verbose,
             callbacks=[neptune_callback],
         )
@@ -135,7 +136,7 @@ class XGBoostTrainer(BaseModel):
         X_valid: pd.DataFrame,
         y_valid: pd.Series,
         fold: int,
-        thershold: float = 0.4,
+        threshold: float = 0.4,
         is_search: Union[bool] = False,
         verbose: Union[bool] = False,
     ) -> XGBClassifier:
@@ -163,7 +164,7 @@ class XGBoostTrainer(BaseModel):
             y_train,
             eval_set=[(X_train, y_train), (X_valid, y_valid)],
             early_stopping_rounds=100,
-            eval_metric=lambda y_true, y_pred: xgb_f1(y_true, y_pred, thershold),
+            eval_metric=lambda y_true, y_pred: xgb_f1(y_true, y_pred, threshold),
             verbose=verbose,
             callbacks=[neptune_callback],
         )
@@ -212,7 +213,7 @@ class CatBoostTrainer(BaseModel):
         X_valid: pd.DataFrame,
         y_valid: pd.Series,
         fold: int,
-        thershold: float = 0.5,
+        threshold: float = 0.5,
         is_search: Union[bool] = False,
         verbose: Union[bool] = False,
     ) -> CatBoostClassifier:

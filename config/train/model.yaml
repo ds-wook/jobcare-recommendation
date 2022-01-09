@@ -125,7 +125,6 @@ model:
       n_jobs: -1
       num_leaves: 26
       objective: binary
-      random_state: 42
   threshold: 0.4
   select: lightgbm
   verbose: 100
