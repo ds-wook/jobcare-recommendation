@@ -101,11 +101,13 @@ class XGBoostTrainer(BaseModel):
         self,
         params: Optional[Dict[str, Any]],
         run: Optional[neptune.init],
+        seed: int = 42,
         search: bool = False,
         **kwargs,
     ):
         self.params = params
         self.run = run
+        self.seed = seed
         self.search = search
         super().__init__(**kwargs)
 
@@ -154,9 +156,9 @@ class XGBoostTrainer(BaseModel):
         )
 
         model = (
-            XGBClassifier(**self.params)
+            XGBClassifier(random_state=self.seed, **self.params)
             if self.params is not None
-            else XGBClassifier(**self._get_default_params())
+            else XGBClassifier(random_state=self.seed, **self._get_default_params())
         )
 
         model.fit(
@@ -177,12 +179,14 @@ class CatBoostTrainer(BaseModel):
         self,
         params: Optional[Dict[str, Any]],
         cat_features: Optional[List[str]],
+        seed: int = 42,
         search: bool = False,
         **kwargs,
     ):
         self.params = params
         self.search = search
         self.cat_features = cat_features
+        self.seed = seed
         super().__init__(**kwargs)
 
     def _get_default_params(self) -> Dict[str, Any]:
@@ -222,9 +226,11 @@ class CatBoostTrainer(BaseModel):
         valid_data = Pool(data=X_valid, label=y_valid, cat_features=self.cat_features)
 
         model = (
-            CatBoostClassifier(**self.params)
+            CatBoostClassifier(random_state=self.seed, **self.params)
             if self.params is not None
-            else CatBoostClassifier(**self._get_default_params())
+            else CatBoostClassifier(
+                random_state=self.seed, **self._get_default_params()
+            )
         )
 
         model.fit(

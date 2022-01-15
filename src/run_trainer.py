@@ -29,6 +29,7 @@ def _main(cfg: DictConfig):
         lgbm_trainer = LightGBMTrainer(
             params=cfg.model.lightgbm.params,
             run=run,
+            seed=cfg.model.seed,
             fold=cfg.model.fold,
             threshold=cfg.model.threshold,
             metric=f1_score,
@@ -62,6 +63,7 @@ def _main(cfg: DictConfig):
         xgb_trainer = XGBoostTrainer(
             params=cfg.model.xgboost.params,
             run=run,
+            seed=cfg.model.seed,
             fold=cfg.model.fold,
             threshold=cfg.model.threshold,
             metric=f1_score,
@@ -84,6 +86,7 @@ def _main(cfg: DictConfig):
         # model train
         cb_trainer = CatBoostTrainer(
             params=cfg.model.catboost.params,
+            seed=cfg.model.seed,
             cat_features=cfg.dataset.cat_features,
             fold=cfg.model.fold,
             threshold=cfg.model.threshold,

@@ -1,3 +1,7 @@
+hydra:
+  run:
+    dir: ../log/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  output_subdir: null
 dataset:
   cat_features:
   - person_attribute_a_1
@@ -127,6 +131,7 @@ model:
       objective: binary
   threshold: 0.4
   select: lightgbm
+  seed: 42
   verbose: 100
   xgboost:
     params:

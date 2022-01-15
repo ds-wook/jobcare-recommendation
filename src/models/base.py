@@ -1,4 +1,5 @@
 import gc
+import logging
 from abc import abstractclassmethod
 from typing import Any, Callable, Dict, NamedTuple, Optional, Union
 
@@ -6,10 +7,6 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import StratifiedKFold
 from tqdm import tqdm
-
-from utils.utils import LoggerFactory
-
-logger = LoggerFactory().getLogger(__name__)
 
 
 class ModelResult(NamedTuple):
@@ -77,7 +74,7 @@ class BaseModel:
                 X_valid,
                 y_valid,
                 fold=fold,
-                thershold=thershold,
+                threshold=thershold,
                 verbose=verbose,
             )
             models[f"fold_{fold}"] = model
@@ -87,6 +84,7 @@ class BaseModel:
 
             score = self.metric(y_valid.values, oof_preds[valid_idx] > thershold)
             scores[f"fold_{fold}"] = score
+            logging.info(f"Fold {fold}: {score}")
             gc.collect()
 
             del X_train, X_valid, y_train, y_valid
@@ -112,8 +110,8 @@ class BaseModel:
         folds = self.fold
         preds = np.zeros(test_x.shape[0])
 
-        logger.info(f"oof score: {self.result.scores['oof_score']}")
-        logger.info("Inference Start!")
+        logging.info(f"oof score: {self.result.scores['oof_score']}")
+        logging.info("Inference Start!")
 
         for fold in tqdm(range(1, folds + 1)):
             model = self.result.models[f"fold_{fold}"]
@@ -121,7 +119,7 @@ class BaseModel:
 
         preds = np.where(preds < threshold, 0, 1)
         assert len(preds) == len(test_x)
-        logger.info("Inference Finish!\n")
+        logging.info("Inference Finish!\n")
 
         return preds
 
