@@ -134,3 +134,4 @@ input/jobcare-recommendation/*
 .vscode/
 submit/*
 !submit/.gitkeep
+log/outputs/*

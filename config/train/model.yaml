@@ -1,6 +1,6 @@
 hydra:
   run:
-    dir: ../log/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: ../log/${now:%Y-%m-%d}/${now:%H-%M-%S}
   output_subdir: null
 dataset:
   cat_features:

@@ -25,7 +25,7 @@ def _main(cfg: DictConfig):
 
     # model train
     lgbm_trainer = LightGBMTrainer(
-        params=cfg.model.lightgbm.params,
+        params=cfg.model.params,
         run=run,
         seed=cfg.model.seed,
         fold=cfg.model.fold,
@@ -44,6 +44,7 @@ def _main(cfg: DictConfig):
 
     train["oof_preds"] = lgbm_oof.oof_preds
     train[["id", "target", "oof_preds"]].to_csv(path + "lgbm_oof.csv", index=False)
+
     submission[cfg.dataset.target] = lgbm_preds_proba
     submission.to_csv(
         submit_path
