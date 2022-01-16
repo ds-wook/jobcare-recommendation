@@ -6,7 +6,7 @@ from omegaconf import DictConfig
 from sklearn.metrics import f1_score
 
 from data.dataset import load_dataset
-from data.features import kfold_mean_encoding, select_features
+from data.features import kfold_mean_encoding
 from models.gbdt import LightGBMTrainer
 
 
@@ -19,7 +19,6 @@ def _main(cfg: DictConfig):
 
     train_x, test_x, train_y = load_dataset(path)
     train_x, test_x, train_y = kfold_mean_encoding(train_x, test_x, train_y)
-    train, test_x = select_features(train_x, train_y, test_x)
 
     # make experiment tracking
     run = neptune.init(
