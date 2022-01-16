@@ -1,24 +1,17 @@
 # %%
 import numpy as np
 import pandas as pd
+from sklearn.metrics.pairwise import cosine_similarity
 
 # %%
-path = "../submit/"
-lgbm_preds = pd.read_csv(path + "5fold_lightgbm_proba_0.4.csv")
-lgbm_preds.head()
+path = "../input/jobcare-recommendation/"
+train = pd.read_csv(path + "train.csv")
 # %%
-cb_preds = pd.read_csv(path + "5fold_catboost_proba_0.38.csv")
-cb_preds.head()
+train["contents_open_dt"].head()
 # %%
-(lgbm_preds["proba_1"].rank() / lgbm_preds["proba_1"].rank().sum()).sum()
+train["contents_open_dt"] = pd.to_datetime(train["contents_open_dt"])
 # %%
-from scipy.stats import rankdata
-
-np.average(
-    [rankdata(lgbm_preds["proba_1"]), rankdata(cb_preds["proba_1"])],
-    weights=[0.3, 0.7],
-    axis=0,
-)
+train[["id", "contents_open_dt"]].sort_values(by="contents_open_dt")
 # %%
-(lgbm_preds["proba_1"].rank(method="min") + cb_preds["proba_1"].rank(method="min")) / 2
+train.groupby(["id", "contents_open_dt"])["target"].sum().to_frame() >= 2
 # %%

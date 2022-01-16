@@ -165,7 +165,7 @@ def lgbm_objective(
         "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 0.1),
     }
     pruning_callback = LightGBMPruningCallback(trial, "f1", valid_name="valid_1")
-
+    threshold = trial.suggest_float("threshold", 0.3, 0.5)
     lgbm_trainer = LightGBMTrainer(
         params=params,
         run=pruning_callback,

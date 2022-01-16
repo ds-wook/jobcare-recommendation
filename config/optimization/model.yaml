@@ -1,3 +1,7 @@
+hydra:
+  run:
+    dir: ../log/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  output_subdir: null
 dataset:
   path: ../input/jobcare-recommendation
   submit: sample_submission.csv
