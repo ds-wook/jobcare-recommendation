@@ -14,6 +14,7 @@ def _main(cfg: DictConfig):
     path = to_absolute_path(cfg.dataset.path) + "/"
     model_name = cfg.model.select
     train_x, test_x, train_y = load_dataset(path)
+
     if model_name == "lightgbm":
         run = neptune.init(
             project=cfg.experiment.project,
@@ -35,7 +36,7 @@ def _main(cfg: DictConfig):
             direction=cfg.experiment.direction,
         )
         study = bayesian_optim.build_study()
-        bayesian_optim.lgbm_save_params(study, cfg.experiment.params)
+        bayesian_optim.save_as_yaml_lgbm_params(study, cfg.experiment.params)
 
     elif model_name == "xgboost":
         run = neptune.init(
@@ -58,7 +59,7 @@ def _main(cfg: DictConfig):
             direction=cfg.experiment.direction,
         )
         study = bayesian_optim.build_study()
-        bayesian_optim.xgb_save_params(study, cfg.experiment.params)
+        bayesian_optim.save_as_yaml_xgb_params(study, cfg.experiment.params)
 
     else:
         raise NotImplementedError

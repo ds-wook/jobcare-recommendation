@@ -1,3 +1,4 @@
+import logging
 import warnings
 from typing import Callable, Sequence, Union
 
@@ -83,15 +84,15 @@ class BayesianOptimizer:
         Parameters:
             study: study best hyperparameter object.
         """
-        print("Best trial:")
+        logging.info("Best trial:")
         trial = study.best_trial
-        print("  Value: ", trial.value)
-        print("  Params: ")
+        logging.info(f"  Value: {trial.value}")
+        logging.info("  Params: ")
         for key, value in trial.params.items():
-            print(f"    '{key}': {value},")
+            logging.info(f"    '{key}': {value},")
 
     @staticmethod
-    def lgbm_save_params(study: Study, params_name: str):
+    def save_as_yaml_lgbm_params(study: Study, params_name: str):
         """
         Save LightGBM hyperparameter
         Parameter:
@@ -107,13 +108,14 @@ class BayesianOptimizer:
 
         with open(to_absolute_path("../config/train/model.yaml")) as f:
             train_dict = yaml.load(f, Loader=yaml.FullLoader)
+
         train_dict["model"]["lightgbm"]["params"] = params
 
         with open(to_absolute_path("../config/train/" + params_name), "w") as p:
             yaml.dump(train_dict, p)
 
     @staticmethod
-    def xgb_save_params(study: optuna.create_study, params_name: str):
+    def save_as_yaml_xgb_params(study: Study, params_name: str):
         """
         Save XGBoost hyperparameter
         Parameter:

@@ -1,3 +1,4 @@
+import logging
 from typing import Tuple
 
 import numpy as np
@@ -5,6 +6,7 @@ import pandas as pd
 from lightgbm import LGBMClassifier
 from shap import TreeExplainer
 from sklearn.model_selection import KFold
+from tqdm import tqdm
 
 
 def select_features(
@@ -12,7 +14,7 @@ def select_features(
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
 
     model = LGBMClassifier(random_state=42)
-    print(f"{model.__class__.__name__} Train Start!")
+    logging.info(f"{model.__class__.__name__} Train Start!")
     model.fit(train, label)
     explainer = TreeExplainer(model)
 
@@ -25,9 +27,9 @@ def select_features(
     importance_df = importance_df.sort_values("shap_importance", ascending=False)
     importance_df = importance_df.query("shap_importance != 0")
     boosting_shap_col = importance_df.column_name.values.tolist()
-    print(f"Total {len(train.columns)} Select {len(boosting_shap_col)}")
 
-    print("Feature: ", boosting_shap_col)
+    logging.info(f"Total {len(train.columns)} Select {len(boosting_shap_col)}")
+
     shap_train = train.loc[:, boosting_shap_col]
     shap_test = test.loc[:, boosting_shap_col]
 
@@ -39,7 +41,7 @@ def kfold_mean_encoding(
 ) -> pd.DataFrame:
     cat_cols = [c for c in train_x.columns if train_x[c].dtypes == "int64"]
 
-    for c in cat_cols:
+    for c in tqdm(cat_cols):
         data_tmp = pd.DataFrame({c: train_x[c], "target": train_y})
         target_mean = data_tmp.groupby(c)["target"].mean()
 
