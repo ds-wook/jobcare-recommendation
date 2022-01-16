@@ -45,10 +45,9 @@ def _main(cfg: DictConfig):
     train["oof_preds"] = lgbm_oof.oof_preds
     train[["id", "target", "oof_preds"]].to_csv(path + "lgbm_oof.csv", index=False)
 
-    submission[cfg.dataset.target] = lgbm_preds_proba
+    submission[["proba_0", "proba_1"]] = lgbm_preds_proba
     submission.to_csv(
-        submit_path
-        + f"{cfg.model.fold}fold_{cfg.model.select}_proba_{cfg.model.threshold}.csv",
+        submit_path + f"{cfg.model.fold}fold_lightgbm_proba_{cfg.model.threshold}.csv",
         index=False,
     )
 

@@ -1,138 +1,24 @@
 # %%
-from typing import List, Tuple
-
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
-
-tqdm.pandas()
-
-
-def preprocess_data(
-    df: pd.DataFrame,
-    cols_merge: List[Tuple[str, pd.DataFrame]],
-    cols_equi: List[Tuple[str, str]],
-    cols_drop: List[str],
-    is_train: bool = True,
-) -> Tuple[pd.DataFrame, np.ndarray]:
-    df = df.copy()
-
-    y_data = None
-    if is_train:
-        y_data = df["target"]
-        df = df.drop(columns="target")
-
-    for col, df_code in cols_merge:
-        df = merge_codes(df, df_code, col)
-
-    cols = df.select_dtypes(bool).columns.tolist()
-    df[cols] = df[cols].astype(int)
-
-    for col1, col2 in cols_equi:
-        df[f"{col1}_{col2}"] = (df[col1] == df[col2]).astype(np.int8)
-
-    df = df.drop(columns=cols_drop)
-    return df, y_data
-
-
-def merge_codes(df: pd.DataFrame, df_code: pd.DataFrame, col: str) -> pd.DataFrame:
-    df = df.copy()
-    df_code = df_code.copy()
-    df_code = df_code.add_prefix(f"{col}_")
-    df_code.columns.values[0] = col
-    return pd.merge(df, df_code, how="left", on=col)
-
-
-def load_dataset(path: str) -> Tuple[pd.DataFrame]:
-    train = pd.read_csv(path + "train.csv")
-    test = pd.read_csv(path + "test.csv")
-    code_d = pd.read_csv(path + "속성_D_코드.csv").iloc[:, :-1]
-    code_h = pd.read_csv(path + "속성_H_코드.csv")
-    code_l = pd.read_csv(path + "속성_L_코드.csv")
-
-    code_d.columns = [
-        "attribute_d",
-        "attribute_d_d",
-        "attribute_d_s",
-        "attribute_d_m",
-        "attribute_d_l",
-    ]
-    code_h.columns = ["attribute_h", "attribute_h_p"]
-    code_l.columns = [
-        "attribute_l",
-        "attribute_l_d",
-        "attribute_l_s",
-        "attribute_l_m",
-        "attribute_l_l",
-    ]
-    # 소분류 중분류 대분류 속성코드 merge 컬럼명 및 데이터 프레임 리스트
-    cols_merge = [
-        ("person_prefer_d_1", code_d),
-        ("person_prefer_d_2", code_d),
-        ("person_prefer_d_3", code_d),
-        ("contents_attribute_d", code_d),
-        ("person_prefer_h_1", code_h),
-        ("person_prefer_h_2", code_h),
-        ("person_prefer_h_3", code_h),
-        ("contents_attribute_h", code_h),
-        ("contents_attribute_l", code_l),
-    ]
-
-    # 회원 속성과 콘텐츠 속성의 동일한 코드 여부에 대한 컬럼명 리스트
-    cols_equi = [
-        ("contents_attribute_c", "person_prefer_c"),
-        ("contents_attribute_e", "person_prefer_e"),
-        ("person_prefer_d_2_attribute_d_s", "contents_attribute_d_attribute_d_s"),
-        ("person_prefer_d_2_attribute_d_m", "contents_attribute_d_attribute_d_m"),
-        ("person_prefer_d_2_attribute_d_l", "contents_attribute_d_attribute_d_l"),
-        ("person_prefer_d_3_attribute_d_s", "contents_attribute_d_attribute_d_s"),
-        ("person_prefer_d_3_attribute_d_m", "contents_attribute_d_attribute_d_m"),
-        ("person_prefer_d_3_attribute_d_l", "contents_attribute_d_attribute_d_l"),
-        ("person_prefer_h_1_attribute_h_p", "contents_attribute_h_attribute_h_p"),
-        ("person_prefer_h_2_attribute_h_p", "contents_attribute_h_attribute_h_p"),
-        ("person_prefer_h_3_attribute_h_p", "contents_attribute_h_attribute_h_p"),
-    ]
-
-    # 학습에 필요없는 컬럼 리스트
-    cols_drop = [
-        "id",
-        "person_prefer_f",
-        "person_prefer_g",
-        "contents_open_dt",
-        "contents_rn",
-    ]
-
-    train, target = preprocess_data(
-        train, cols_merge=cols_merge, cols_equi=cols_equi, cols_drop=cols_drop
-    )
-    test, _ = preprocess_data(
-        test,
-        cols_merge=cols_merge,
-        cols_equi=cols_equi,
-        cols_drop=cols_drop,
-        is_train=False,
-    )
-
-    return train, test, target
-
 
 # %%
-train, test, target = load_dataset("../input/jobcare-recommendation/")
-train.head()
+path = "../submit/"
+lgbm_preds = pd.read_csv(path + "5fold_lightgbm_proba_0.4.csv")
+lgbm_preds.head()
 # %%
-train.info()
+cb_preds = pd.read_csv(path + "5fold_catboost_proba_0.38.csv")
+cb_preds.head()
 # %%
-train.columns
+(lgbm_preds["proba_1"].rank() / lgbm_preds["proba_1"].rank().sum()).sum()
 # %%
-set(train.contents_attribute_l_attribute_l_s.unique())
-# %%
-set(test.contents_attribute_l_attribute_l_s.unique()) - set(
-    train.contents_attribute_l_attribute_l_s.unique()
+from scipy.stats import rankdata
+
+np.average(
+    [rankdata(lgbm_preds["proba_1"]), rankdata(cb_preds["proba_1"])],
+    weights=[0.3, 0.7],
+    axis=0,
 )
-
 # %%
-cat_features = train.columns[train.nunique() > 2].tolist()
-cat_features
-# %%
-train.info()
+(lgbm_preds["proba_1"].rank(method="min") + cb_preds["proba_1"].rank(method="min")) / 2
 # %%

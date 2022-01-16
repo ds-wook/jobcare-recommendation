@@ -1,5 +1,5 @@
 import hydra
-
+import numpy as np
 import pandas as pd
 from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
@@ -11,25 +11,11 @@ def _main(cfg: DictConfig):
     submit_path = to_absolute_path(cfg.submit.path) + "/"
     submission = pd.read_csv(path + cfg.dataset.submit)
 
-    lightgbm = pd.read_csv(submit_path + "5fold_lightgbm_threshold_0.36.csv")
-    catboost = pd.read_csv(submit_path + "5fold_catboost_threshold_0.4.csv")
-    elo = pd.read_csv(submit_path + "elo_pred.csv")
-    submission["submit_lgb"] = lightgbm.target
-    submission["submit_ctb"] = catboost.target
-    submission["submit_elo"] = elo.target
+    lightgbm = pd.read_csv(submit_path + "5fold_lightgbm_proba_0.4.csv")
+    catboost = pd.read_csv(submit_path + "5fold_catboost_proba_0.38.csv")
 
-    submission["target"] = (
-        submission[
-            [col for col in submission.columns if col.startswith("submit_")]
-        ].sum(axis=1)
-        >= 2
-    ).astype(int)
-
-    submission.drop(
-        [col for col in submission.columns if col.startswith("submit_")],
-        axis=1,
-        inplace=True,
-    )
+    submission["target"] = lightgbm["proba_1"] * 0.33 + catboost["proba_1"] * 0.67
+    submission["target"] = np.where(submission["target"] < 0.4, 0, 1)
     submission.to_csv(submit_path + cfg.submit.name, index=False)
 
 

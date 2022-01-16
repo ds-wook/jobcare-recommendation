@@ -4,8 +4,7 @@ import os
 import random
 import time
 from contextlib import contextmanager
-from pathlib import Path
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -16,46 +15,6 @@ def seed_everything(seed: int = 42):
     random.seed(seed)
     os.environ["PYTHONASHSEED"] = str(seed)
     np.random.seed(seed)
-
-
-class Singleton(type):
-    _instances = {}
-
-    def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-
-        return cls._instances[cls]
-
-
-class LoggerFactory(metaclass=Singleton):
-    def __init__(self, log_path: Optional[str] = None, loglevel=logging.INFO):
-        self.loglevel = loglevel
-        if log_path is None:
-            self.log_path = Path("../log/log")
-        else:
-            self.log_path = Path(log_path)
-            self.log_path.parent.mkdir(parents=True, exist_ok=True)
-
-    def getLogger(self, log_name: str) -> logging.getLogger:
-        fmt = "%(asctime)s [%(name)s|%(levelname)s] %(message)s"
-        formatter = logging.Formatter(fmt)
-        logger = logging.getLogger(log_name)
-
-        # add stream Handler
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-
-        # add file Handler
-        handler = logging.handlers.RotatingFileHandler(
-            filename=self.log_path, maxBytes=2 * 1024 * 1024 * 1024, backupCount=10
-        )
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(self.loglevel)
-
-        return logger
 
 
 @contextmanager
@@ -102,7 +61,7 @@ def reduce_mem_usage(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
     end_mem = df.memory_usage().sum() / 1024 ** 2
 
     if verbose:
-        print(
+        logging.info(
             "Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)".format(
                 end_mem, 100 * (start_mem - end_mem) / start_mem
             )

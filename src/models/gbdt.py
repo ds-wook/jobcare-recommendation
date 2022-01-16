@@ -10,9 +10,8 @@ from neptune.new.integrations.lightgbm import create_booster_summary
 from xgboost import XGBClassifier
 
 from models.base import BaseModel
-from utils.utils import LoggerFactory, f1_eval, xgb_f1
+from utils.utils import f1_eval, xgb_f1
 
-logger = LoggerFactory().getLogger(__name__)
 warnings.filterwarnings("ignore")
 
 
@@ -207,7 +206,6 @@ class CatBoostTrainer(BaseModel):
             "od_type": "Iter",
             "od_wait": 45,
             "iterations": 10000,
-            "cat_features": self.cat_features,
         }
 
     def _train(
@@ -226,10 +224,14 @@ class CatBoostTrainer(BaseModel):
         valid_data = Pool(data=X_valid, label=y_valid, cat_features=self.cat_features)
 
         model = (
-            CatBoostClassifier(random_state=self.seed, **self.params)
+            CatBoostClassifier(
+                random_state=self.seed, cat_features=self.cat_features, **self.params
+            )
             if self.params is not None
             else CatBoostClassifier(
-                random_state=self.seed, **self._get_default_params()
+                random_state=self.seed,
+                cat_features=self.cat_features,
+                **self._get_default_params(),
             )
         )
 
