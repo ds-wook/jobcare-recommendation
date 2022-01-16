@@ -33,6 +33,8 @@ def select_features(
     shap_train = train.loc[:, boosting_shap_col]
     shap_test = test.loc[:, boosting_shap_col]
 
+    logging.info(f"Train: {shap_train.shape} Test: {shap_test.shape}")
+
     return shap_train, shap_test
 
 
