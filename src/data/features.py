@@ -41,7 +41,7 @@ def select_features(
 def kfold_mean_encoding(
     train_x: pd.DataFrame, test_x: pd.DataFrame, train_y: pd.Series
 ) -> pd.DataFrame:
-    cat_cols = [c for c in train_x.columns if train_x[c].dtypes == "int64"]
+    cat_cols = train_x.columns[train_x.nunique() > 2].tolist()
 
     for c in tqdm(cat_cols):
         data_tmp = pd.DataFrame({c: train_x[c], "target": train_y})

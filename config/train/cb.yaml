@@ -65,7 +65,7 @@ model:
     loss_function: Logloss
     iterations: 10000
     one_hot_max_size: 2
-    used_ram_limit: 8gb
+    used_ram_limit: 12gb
   threshold: 0.4
   seed: 42
   verbose: 100

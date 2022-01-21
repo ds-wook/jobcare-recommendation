@@ -11,11 +11,11 @@ def _main(cfg: DictConfig):
     submit_path = to_absolute_path(cfg.submit.path) + "/"
     submission = pd.read_csv(path + cfg.dataset.submit)
 
-    lightgbm = pd.read_csv(submit_path + "5fold_lightgbm_proba_0.4.csv")
+    lightgbm = pd.read_csv(submit_path + "proba_5fold_mean_encoding_lightgbm.csv")
     catboost = pd.read_csv(submit_path + "5fold_catboost_proba_0.38.csv")
 
-    submission["target"] = lightgbm["proba_1"] * 0.33 + catboost["proba_1"] * 0.67
-    submission["target"] = np.where(submission["target"] < 0.4, 0, 1)
+    submission["target"] = lightgbm["proba_1"] * 0.2 + catboost["proba_1"] * 0.8
+    submission["target"] = np.where(submission["target"] < 0.38, 0, 1)
     submission.to_csv(submit_path + cfg.submit.name, index=False)
 
 

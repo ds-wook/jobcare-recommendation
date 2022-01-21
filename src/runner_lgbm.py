@@ -34,9 +34,7 @@ def _main(cfg: DictConfig):
         threshold=cfg.model.threshold,
         metric=f1_score,
     )
-    lgbm_trainer.train(
-        train_x, train_y, cfg.model.threshold, cfg.model.verbose
-    )
+    lgbm_trainer.train(train_x, train_y, cfg.model.threshold, cfg.model.verbose)
     lgbm_preds = lgbm_trainer.predict(test_x, threshold=cfg.model.threshold)
     lgbm_preds_proba = lgbm_trainer.predict_proba(test_x)
 

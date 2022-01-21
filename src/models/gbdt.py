@@ -1,10 +1,10 @@
 import warnings
 from typing import Any, Dict, List, Optional, Union
 
-import neptune.new as neptune
 import pandas as pd
 from catboost import CatBoostClassifier, Pool
 from lightgbm import LGBMClassifier
+from neptune.new import Run
 from neptune.new.integrations import lightgbm, xgboost
 from neptune.new.integrations.lightgbm import create_booster_summary
 from xgboost import XGBClassifier
@@ -19,7 +19,7 @@ class LightGBMTrainer(BaseModel):
     def __init__(
         self,
         params: Optional[Dict[str, Any]],
-        run: Optional[neptune.init],
+        run: Optional[Run],
         seed: int = 42,
         search: bool = False,
         **kwargs,
@@ -99,7 +99,7 @@ class XGBoostTrainer(BaseModel):
     def __init__(
         self,
         params: Optional[Dict[str, Any]],
-        run: Optional[neptune.init],
+        run: Optional[Run],
         seed: int = 42,
         search: bool = False,
         **kwargs,
