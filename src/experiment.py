@@ -6,6 +6,7 @@ from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
 from data.dataset import load_dataset
+from data.features import kfold_mean_encoding, select_features
 from tuning.bayesian import BayesianOptimizer, lgbm_objective, xgb_objective
 
 
@@ -14,6 +15,8 @@ def _main(cfg: DictConfig):
     path = to_absolute_path(cfg.dataset.path) + "/"
     model_name = cfg.model.select
     train_x, test_x, train_y = load_dataset(path)
+    train_x, test_x, train_y = kfold_mean_encoding(train_x, test_x, train_y)
+    train_x, test_x = select_features(train_x, train_y, test_x)
 
     if model_name == "lightgbm":
         run = neptune.init(

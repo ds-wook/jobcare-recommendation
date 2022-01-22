@@ -17,10 +17,13 @@ class ModelResult(NamedTuple):
 
 
 class BaseModel:
-    def __init__(self, fold: int, threshold: float, metric: Callable):
+    def __init__(
+        self, fold: int, threshold: float, metric: Callable, search: bool = False
+    ):
         self.fold = fold
         self.threshold = threshold
         self.metric = metric
+        self.search = search
         self.result = None
 
     @abstractclassmethod
@@ -31,7 +34,6 @@ class BaseModel:
         X_valid: pd.DataFrame,
         y_valid: pd.Series,
         fold: int,
-        is_search: Union[bool] = False,
         verbose: Union[bool] = False,
     ):
         raise NotImplementedError
@@ -84,7 +86,10 @@ class BaseModel:
 
             score = self.metric(y_valid.values, oof_preds[valid_idx] > thershold)
             scores[f"fold_{fold}"] = score
-            logging.info(f"Fold {fold}: {score}")
+
+            if not self.search:
+                logging.info(f"Fold {fold}: {score}")
+
             gc.collect()
 
             del X_train, X_valid, y_train, y_valid

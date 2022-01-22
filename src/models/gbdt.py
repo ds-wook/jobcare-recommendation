@@ -21,13 +21,11 @@ class LightGBMTrainer(BaseModel):
         params: Optional[Dict[str, Any]],
         run: Optional[Run],
         seed: int = 42,
-        search: bool = False,
         **kwargs,
     ):
         self.params = params
         self.run = run
         self.seed = seed
-        self.search = search
         super().__init__(**kwargs)
 
     def _get_default_params(self) -> Dict[str, Any]:
@@ -57,14 +55,13 @@ class LightGBMTrainer(BaseModel):
         y_valid: pd.Series,
         fold: int,
         threshold: float = 0.4,
-        is_search: Union[bool] = False,
-        verbose: Union[bool] = False,
+        verbose: Union[int, bool] = False,
     ) -> LGBMClassifier:
         """method train"""
 
         neptune_callback = (
             lightgbm.NeptuneCallback(run=self.run, base_namespace=f"fold_{fold}")
-            if is_search is self.search
+            if not self.search
             else self.run
         )
 
@@ -84,7 +81,7 @@ class LightGBMTrainer(BaseModel):
             callbacks=[neptune_callback],
         )
 
-        if is_search is self.search:
+        if not self.search:
             # Log summary metadata to the same run under the "lgbm_summary" namespace
             self.run[f"lgbm_summary/fold_{fold}"] = create_booster_summary(
                 booster=model,
@@ -138,8 +135,7 @@ class XGBoostTrainer(BaseModel):
         y_valid: pd.Series,
         fold: int,
         threshold: float = 0.4,
-        is_search: Union[bool] = False,
-        verbose: Union[bool] = False,
+        verbose: Union[int, bool] = False,
     ) -> XGBClassifier:
         """method train"""
 
@@ -150,7 +146,7 @@ class XGBoostTrainer(BaseModel):
                 log_tree=[0, 1, 2, 3],
                 max_num_features=10,
             )
-            if is_search is self.search
+            if not self.search
             else self.run
         )
 

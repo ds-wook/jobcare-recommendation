@@ -23,7 +23,6 @@ model:
   fold: 5
   params:
     boosting_type: gbdt
-    learning_rate: 0.05
     subsample: 0.8
     colsample_bytree: 0.6
     n_estimators: 10000

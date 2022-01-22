@@ -155,26 +155,26 @@ def lgbm_objective(
     """
     params = {
         "n_estimators": 10000,
-        "objective": "regression",
+        "objective": "binary",
         "boosting_type": "gbdt",
         "n_jobs": -1,
         "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.05),
         "num_leaves": trial.suggest_int("num_leaves", 4, 64),
         "max_depth": trial.suggest_int("max_depth", 4, 16),
         "subsample": trial.suggest_float("subsample", 0.1, 1.0),
-        "colsample_bytree": trial.suggest_float("subsample", 0.1, 1.0),
+        "colsample_bytree": trial.suggest_float("colsample_bytree", 0.1, 1.0),
         "reg_alpha": trial.suggest_float("reg_alpha", 0.01, 0.1),
         "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 0.1),
     }
     pruning_callback = LightGBMPruningCallback(trial, "f1", valid_name="valid_1")
-    threshold = trial.suggest_float("threshold", 0.3, 0.5)
+    threshold = trial.suggest_float("threshold", 0.35, 0.4)
     lgbm_trainer = LightGBMTrainer(
         params=params,
         run=pruning_callback,
-        search=True,
         fold=fold,
         threshold=threshold,
         metric=f1_score,
+        search=True,
     )
 
     result = lgbm_trainer.train(X, y)
