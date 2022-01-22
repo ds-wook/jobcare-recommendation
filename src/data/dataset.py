@@ -17,6 +17,7 @@ def preprocess_data(
     df = df.copy()
 
     y_data = None
+
     if is_train:
         y_data = df["target"]
         df = df.drop(columns="target")
@@ -31,6 +32,7 @@ def preprocess_data(
         df[f"{col1}_{col2}"] = (df[col1] == df[col2]).astype(np.int8)
 
     df = df.drop(columns=cols_drop)
+
     return df, y_data
 
 

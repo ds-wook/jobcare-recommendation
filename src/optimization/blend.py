@@ -1,13 +1,10 @@
+import logging
 from typing import List
 
 import numpy as np
-from scipy.optimize import minimize
-from sklearn.metrics import mean_squared_error
+from scipy.optimize import Bounds, minimize
+from sklearn.metrics import f1_score
 from sklearn.model_selection import KFold
-
-from utils.utils import LoggerFactory
-
-logger = LoggerFactory().getLogger(__name__)
 
 
 def get_score(
@@ -21,7 +18,7 @@ def get_score(
         oofs: oof preds
         preds: real preds
     return:
-        RMSE Score
+        F1 Score
     """
     blending = np.zeros_like(oofs[0][train_idx])
 
@@ -29,12 +26,12 @@ def get_score(
         blending += weights * oof[train_idx]
 
     blending += (1 - np.sum(weights)) * oofs[-1][train_idx]
-    scores = mean_squared_error(preds[train_idx], blending, squared=False)
+    scores = -f1_score(preds[train_idx], blending > 0.4)
 
     return scores
 
 
-def get_best_weights(oofs: np.ndarray, preds: np.ndarray) -> np.ndarray:
+def get_best_weights(oofs: List[np.ndarray], preds: List[np.ndarray]) -> np.ndarray:
     """
     Optimized weight with Gradient method
     Parameters:
@@ -46,23 +43,24 @@ def get_best_weights(oofs: np.ndarray, preds: np.ndarray) -> np.ndarray:
     weight_list = []
     weights = np.array([1 / len(oofs) for _ in range(len(oofs) - 1)])
 
-    logger.info("Blending Start")
+    logging.info("Blending Start")
 
     kf = KFold(n_splits=5)
     for fold, (train_idx, valid_idx) in enumerate(kf.split(oofs[0])):
-        res = minimize(
+        result = minimize(
             get_score,
             weights,
             args=(train_idx, oofs, preds),
             method="Nelder-Mead",
+            bounds=Bounds(0.01, 0.99),
             tol=1e-06,
         )
 
-        logger.info(f"fold: {fold} weights: {res.x}")
-        weight_list.append(res.x)
+        logging.info(f"fold: {fold} weights: {result.x}")
+        weight_list.append(result.x)
 
     mean_weight = np.mean(weight_list, axis=0)
     mean_weight = np.insert(mean_weight, len(mean_weight), 1 - np.sum(mean_weight))
-    logger.info(f"Optimized weight: {mean_weight}\n")
+    logging.info(f"Optimized weight: {mean_weight}\n")
 
     return mean_weight
