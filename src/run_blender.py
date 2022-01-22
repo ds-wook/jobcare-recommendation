@@ -12,9 +12,13 @@ def _main(cfg: DictConfig):
     submission = pd.read_csv(path + cfg.dataset.submit)
 
     lightgbm = pd.read_csv(submit_path + "proba_5fold_mean_encoding_lightgbm.csv")
-    catboost = pd.read_csv(submit_path + "5fold_catboost_proba_0.38.csv")
-
-    submission["target"] = lightgbm["proba_1"] * 0.2 + catboost["proba_1"] * 0.8
+    catboost = pd.read_csv(submit_path + "proba_5fold_catboost.csv")
+    elo = pd.read_csv(submit_path + "proba_elo.csv")
+    submission["target"] = (
+        lightgbm["proba_1"] * 0.15
+        + catboost["proba_1"] * 0.8
+        + elo["target"] * 0.05
+    )
     submission["target"] = np.where(submission["target"] < 0.38, 0, 1)
     submission.to_csv(submit_path + cfg.submit.name, index=False)
 

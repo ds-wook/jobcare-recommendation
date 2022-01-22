@@ -158,7 +158,7 @@ def lgbm_objective(
         "objective": "binary",
         "boosting_type": "gbdt",
         "n_jobs": -1,
-        "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.05),
+        "learning_rate": trial.suggest_float("learning_rate", 0.03, 0.1),
         "num_leaves": trial.suggest_int("num_leaves", 4, 64),
         "max_depth": trial.suggest_int("max_depth", 4, 16),
         "subsample": trial.suggest_float("subsample", 0.1, 1.0),
@@ -167,7 +167,7 @@ def lgbm_objective(
         "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 0.1),
     }
     pruning_callback = LightGBMPruningCallback(trial, "f1", valid_name="valid_1")
-    threshold = trial.suggest_float("threshold", 0.35, 0.4)
+
     lgbm_trainer = LightGBMTrainer(
         params=params,
         run=pruning_callback,
