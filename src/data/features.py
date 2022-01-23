@@ -1,5 +1,5 @@
 import logging
-from typing import Tuple
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -39,11 +39,12 @@ def select_features(
 
 
 def kfold_mean_encoding(
-    train_x: pd.DataFrame, test_x: pd.DataFrame, train_y: pd.Series
+    train_x: pd.DataFrame,
+    test_x: pd.DataFrame,
+    train_y: pd.Series,
+    cat_features: List[str],
 ) -> pd.DataFrame:
-    cat_cols = train_x.columns[train_x.nunique() > 2].tolist()
-
-    for c in tqdm(cat_cols):
+    for c in tqdm(cat_features):
         data_tmp = pd.DataFrame({c: train_x[c], "target": train_y})
         target_mean = data_tmp.groupby(c)["target"].mean()
 

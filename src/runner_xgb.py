@@ -7,10 +7,10 @@ from sklearn.metrics import f1_score
 
 from data.dataset import load_dataset
 from data.features import kfold_mean_encoding, select_features
-from models.gbdt import LightGBMTrainer
+from models.gbdt import XGBoostTrainer
 
 
-@hydra.main(config_path="../config/train/", config_name="lgbm.yaml")
+@hydra.main(config_path="../config/train/", config_name="xgb.yaml")
 def _main(cfg: DictConfig):
     path = to_absolute_path(cfg.dataset.path) + "/"
     submit_path = to_absolute_path(cfg.submit.path) + "/"
@@ -30,7 +30,7 @@ def _main(cfg: DictConfig):
     )
 
     # model train
-    lgbm_trainer = LightGBMTrainer(
+    xgb_trainer = XGBoostTrainer(
         params=cfg.model.params,
         run=run,
         seed=cfg.model.seed,
@@ -38,21 +38,21 @@ def _main(cfg: DictConfig):
         threshold=cfg.model.threshold,
         metric=f1_score,
     )
-    lgbm_result = lgbm_trainer.train(
+    xgb_result = xgb_trainer.train(
         train_x, train_y, cfg.model.threshold, cfg.model.verbose
     )
-    train["oof_preds"] = lgbm_result.oof_preds
+    train["oof_preds"] = xgb_result.oof_preds
     train[["id", "target", "oof_preds"]].to_csv(
         submit_path + f"train_oof_{cfg.submit.name}"
     )
-    lgbm_preds = lgbm_trainer.predict(test_x, threshold=cfg.model.threshold)
-    lgbm_preds_proba = lgbm_trainer.predict_proba(test_x)
+    xgb_preds = xgb_trainer.predict(test_x, threshold=cfg.model.threshold)
+    xgb_preds_proba = xgb_trainer.predict_proba(test_x)
 
     # Save test predictions
-    submission[cfg.dataset.target] = lgbm_preds
+    submission[cfg.dataset.target] = xgb_preds
     submission.to_csv(submit_path + cfg.submit.name, index=False)
 
-    submission[["proba_0", "proba_1"]] = lgbm_preds_proba
+    submission[["proba_0", "proba_1"]] = xgb_preds_proba
     submission.to_csv(submit_path + f"proba_{cfg.submit.name}", index=False)
 
 

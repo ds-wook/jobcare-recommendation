@@ -1,17 +1,19 @@
 # %%
 import numpy as np
 import pandas as pd
-from sklearn.metrics.pairwise import cosine_similarity
+
 
 # %%
 path = "../input/jobcare-recommendation/"
 train = pd.read_csv(path + "train.csv")
+test = pd.read_csv(path + "test.csv")
 # %%
-train["contents_open_dt"].head()
+train.head()
 # %%
-train["contents_open_dt"] = pd.to_datetime(train["contents_open_dt"])
+test.head()
 # %%
-train[["id", "contents_open_dt"]].sort_values(by="contents_open_dt")
+train_person_rn = train["person_rn"].unique().tolist()
+test_person_rn = test["person_rn"].unique().tolist()
 # %%
-train.groupby(["id", "contents_open_dt"])["target"].sum().to_frame() >= 2
+set(test_person_rn) - set(train_person_rn)
 # %%

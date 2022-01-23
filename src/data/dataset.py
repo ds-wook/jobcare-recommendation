@@ -103,7 +103,6 @@ def load_dataset(path: str) -> Tuple[pd.DataFrame]:
         "person_prefer_f",
         "person_prefer_g",
         "contents_open_dt",
-        "contents_rn",
     ]
 
     train, target = preprocess_data(

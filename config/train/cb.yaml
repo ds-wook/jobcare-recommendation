@@ -23,7 +23,6 @@ dataset:
   - contents_attribute_m
   - contents_attribute_e
   - contents_attribute_h
-  - person_rn
   - person_prefer_d_1_attribute_d_d
   - person_prefer_d_1_attribute_d_s
   - person_prefer_d_1_attribute_d_m
@@ -61,11 +60,17 @@ model:
   fold: 5
   params:
     learning_rate: 0.03
+    l2_leaf_reg: 0.4
+    max_depth: 8
+    bagging_temperature: 1
+    min_data_in_leaf: 57
+    max_bin: 494
+    od_type: Iter
+    od_wait: 500
     eval_metric: F1
     loss_function: Logloss
     iterations: 10000
     one_hot_max_size: 2
-    used_ram_limit: 12gb
   threshold: 0.4
   seed: 42
   verbose: 100
