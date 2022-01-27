@@ -5,7 +5,6 @@ from omegaconf import DictConfig
 from sklearn.metrics import f1_score
 
 from data.dataset import load_dataset
-from data.features import kfold_mean_encoding
 from models.gbdt import CatBoostTrainer
 from utils.utils import reduce_mem_usage
 
@@ -18,11 +17,7 @@ def _main(cfg: DictConfig):
     submission = pd.read_csv(path + cfg.dataset.submit)
 
     train_x, test_x, train_y = load_dataset(path)
-    train_x, test_x, train_y = kfold_mean_encoding(
-        train_x, test_x, train_y, ["person_rn", "contents_rn"]
-    )
-    train_x = train_x.fillna(-1)
-    test_x = test_x.fillna(-1)
+
     train_x = reduce_mem_usage(train_x)
     test_x = reduce_mem_usage(test_x)
 

@@ -15,7 +15,9 @@ def _main(cfg: DictConfig):
     path = to_absolute_path(cfg.dataset.path) + "/"
     model_name = cfg.model.select
     train_x, test_x, train_y = load_dataset(path)
-    train_x, test_x, train_y = kfold_mean_encoding(train_x, test_x, train_y)
+    train_x, test_x, train_y = kfold_mean_encoding(
+        train_x, test_x, train_y, cfg.dataset.cat_features
+    )
     train_x, test_x = select_features(train_x, train_y, test_x)
 
     if model_name == "lightgbm":
@@ -26,6 +28,7 @@ def _main(cfg: DictConfig):
 
         objective = partial(
             lgbm_objective,
+            params=cfg.model.lightgbm.params,
             X=train_x,
             y=train_y,
             fold=cfg.model.fold,

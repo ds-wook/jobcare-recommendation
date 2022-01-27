@@ -1,6 +1,6 @@
 import logging
 import warnings
-from typing import Callable, Sequence, Union
+from typing import Any, Callable, Dict, Sequence, Union
 
 import neptune.new.integrations.optuna as optuna_utils
 import optuna
@@ -138,6 +138,7 @@ class BayesianOptimizer:
 
 def lgbm_objective(
     trial: FrozenTrial,
+    params: Dict[str, Any],
     X: pd.DataFrame,
     y: pd.Series,
     fold: int,
@@ -158,13 +159,15 @@ def lgbm_objective(
         "objective": "binary",
         "boosting_type": "gbdt",
         "n_jobs": -1,
-        "learning_rate": trial.suggest_float("learning_rate", 0.03, 0.1),
-        "num_leaves": trial.suggest_int("num_leaves", 4, 64),
-        "max_depth": trial.suggest_int("max_depth", 4, 16),
-        "subsample": trial.suggest_float("subsample", 0.1, 1.0),
-        "colsample_bytree": trial.suggest_float("colsample_bytree", 0.1, 1.0),
-        "reg_alpha": trial.suggest_float("reg_alpha", 0.01, 0.1),
-        "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 0.1),
+        "learning_rate": trial.suggest_float("learning_rate", *params.learning_rate),
+        "num_leaves": trial.suggest_int("num_leaves", *params.num_leaves),
+        "max_depth": trial.suggest_int("max_depth", *params.max_depth),
+        "reg_alpha": trial.suggest_float("reg_alpha", *params.reg_alpha),
+        "reg_lambda": trial.suggest_float("reg_lambda", *params.reg_lambda),
+        "subsample": trial.suggest_float("subsample", *params.subsample),
+        "colsample_bytree": trial.suggest_float(
+            "colsample_bytree", *params.colsample_bytree
+        ),
     }
     pruning_callback = LightGBMPruningCallback(trial, "f1", valid_name="valid_1")
 
