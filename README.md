@@ -3,7 +3,8 @@
 
 
 ### Model Architecture
-![competition-model](https://user-images.githubusercontent.com/46340424/151581921-16dd64fc-68d7-41aa-8cf6-ff3bf7a95178.png)
+![competition-model](https://user-images.githubusercontent.com/46340424/151582477-9c676890-2cff-45b9-902d-6e706b5eb5d1.png)
+
 
 ### Benchmark
 |Score|CV|Public LB|Private LB|
