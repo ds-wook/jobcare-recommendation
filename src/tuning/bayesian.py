@@ -188,6 +188,7 @@ def lgbm_objective(
 
 def xgb_objective(
     trial: FrozenTrial,
+    params: Dict[str, Any],
     X: pd.DataFrame,
     y: pd.Series,
     fold: int,
@@ -208,14 +209,18 @@ def xgb_objective(
         "n_estimators": 10000,
         "objective": "reg:squarederror",
         "n_jobs": -1,
-        "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.01),
-        "reg_alpha": trial.suggest_float("reg_alpha", 0.1, 0.5),
-        "reg_lambda": trial.suggest_float("reg_lambda", 0.3, 1.0),
-        "max_depth": trial.suggest_int("max_depth", 2, 10),
-        "colsample_bytree": trial.suggest_float("colsample_bytree", 0.4, 1.0),
-        "min_child_weight": trial.suggest_int("min_child_weight", 3, 10),
-        "subsample": trial.suggest_float("subsample", 0.3, 1.0),
-        "gamma": trial.suggest_float("gamma", 0.01, 0.1),
+        "learning_rate": trial.suggest_float("learning_rate", *params.learning_rate),
+        "reg_alpha": trial.suggest_float("reg_alpha", *params.reg_alpha),
+        "reg_lambda": trial.suggest_float("reg_lambda", *params.reg_lambda),
+        "max_depth": trial.suggest_int("max_depth", *params.max_depth),
+        "subsample": trial.suggest_float("subsample", *params.subsample),
+        "gamma": trial.suggest_float("gamma", *params.gamma),
+        "colsample_bytree": trial.suggest_float(
+            "colsample_bytree", *params.colsample_bytree
+        ),
+        "min_child_weight": trial.suggest_int(
+            "min_child_weight", *params.min_child_weight
+        ),
     }
 
     pruning_callback = XGBoostPruningCallback(trial, "validation_1-f1")
