@@ -1,0 +1,86 @@
+hydra:
+  run:
+    dir: ../log/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
+  output_subdir: null
+dataset:
+  cat_features:
+  - person_attribute_a_1
+  - person_attribute_b
+  - person_prefer_c
+  - person_prefer_d_1
+  - person_prefer_d_2
+  - person_prefer_d_3
+  - person_prefer_e
+  - person_prefer_h_1
+  - person_prefer_h_2
+  - person_prefer_h_3
+  - contents_attribute_i
+  - contents_attribute_a
+  - contents_attribute_j_1
+  - contents_attribute_c
+  - contents_attribute_l
+  - contents_attribute_d
+  - contents_attribute_m
+  - contents_attribute_e
+  - contents_attribute_h
+  - person_prefer_d_1_attribute_d_d
+  - person_prefer_d_1_attribute_d_s
+  - person_prefer_d_1_attribute_d_m
+  - person_prefer_d_1_attribute_d_l
+  - person_prefer_d_2_attribute_d_d
+  - person_prefer_d_2_attribute_d_s
+  - person_prefer_d_2_attribute_d_m
+  - person_prefer_d_2_attribute_d_l
+  - person_prefer_d_3_attribute_d_d
+  - person_prefer_d_3_attribute_d_s
+  - person_prefer_d_3_attribute_d_m
+  - person_prefer_d_3_attribute_d_l
+  - contents_attribute_d_attribute_d_d
+  - contents_attribute_d_attribute_d_s
+  - contents_attribute_d_attribute_d_m
+  - contents_attribute_d_attribute_d_l
+  - person_prefer_h_1_attribute_h_m
+  - person_prefer_h_1_attribute_h_l
+  - person_prefer_h_2_attribute_h_m
+  - person_prefer_h_2_attribute_h_l
+  - person_prefer_h_3_attribute_h_m
+  - person_prefer_h_3_attribute_h_l
+  - contents_attribute_h_attribute_h_m
+  - contents_attribute_h_attribute_h_l
+  - contents_attribute_l_attribute_l_d
+  - contents_attribute_l_attribute_l_s
+  - contents_attribute_l_attribute_l_m
+  - contents_attribute_l_attribute_l_l
+  path: input/jobcare/
+  submit: sample_submission.csv
+  test: test.csv
+  train: train.csv
+  target: target
+experiment:
+  project: ds-wook/dacon-project
+  tags:
+    - XGBoost
+    - KFold
+    - 잡케어 추천
+model:
+  fold: 5
+  threshold: 0.4
+  seed: 42
+  verbose: 100
+  xgboost:
+    params:
+      colsample_bytree: 0.8627622080115674
+      gamma: 0.020428215357261678
+      learning_rate: 0.010220884684944096
+      max_depth: 8
+      min_child_weight: 3
+      n_estimators: 10000
+      n_jobs: -1
+      objective: error
+      random_state: 42
+      reg_alpha: 0.42618457138193366
+      reg_lambda: 0.7948001406933319
+      subsample: 0.5509260099809907
+submit:
+  name: 5fold_lightgbm.csv
+  path: ../submit

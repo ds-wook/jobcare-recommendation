@@ -128,10 +128,10 @@ dmypy.json
 # Pyre type checker
 .pyre/
 # ignore files in folder 
-input/jobcare-recommendation/*
+input/*
 # but keep the folder by keeping .gitkeep file
-!input/jobcare-recommendation/.gitkeep
+!input/.gitkeep
 .vscode/
-submit/*
-!submit/.gitkeep
+output/*
+!output/.gitkeep
 log/outputs/*

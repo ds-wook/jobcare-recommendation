@@ -53,7 +53,7 @@ dataset:
   - contents_attribute_l_attribute_l_s
   - contents_attribute_l_attribute_l_m
   - contents_attribute_l_attribute_l_l
-  path: ../input/jobcare-recommendation
+  path: input/jobcare/
   submit: sample_submission.csv
   test: test.csv
   train: train.csv
@@ -79,6 +79,7 @@ model:
     n_jobs: -1
     objective: binary
   threshold: 0.35852620618436454
+  search: False
   seed: 42
   verbose: 100
 submit:

@@ -51,36 +51,18 @@ dataset:
   - contents_attribute_l_attribute_l_s
   - contents_attribute_l_attribute_l_m
   - contents_attribute_l_attribute_l_l
-  path: ../input/jobcare-recommendation
+  path: input/jobcare/
+  code_d: 속성_D_코드.csv
+  code_h: 속성_H_코드.csv
+  code_l: 속성_L_코드.csv
   submit: sample_submission.csv
   test: test.csv
   train: train.csv
   target: target
-experiment:
-  project: ds-wook/dacon-project
-  tags:
-    - XGBoost
-    - KFold
-    - 잡케어 추천
 model:
-  fold: 5
-  threshold: 0.4
-  seed: 42
-  verbose: 100
-  xgboost:
-    params:
-      colsample_bytree: 0.8627622080115674
-      gamma: 0.020428215357261678
-      learning_rate: 0.010220884684944096
-      max_depth: 8
-      min_child_weight: 3
-      n_estimators: 10000
-      n_jobs: -1
-      objective: error
-      random_state: 42
-      reg_alpha: 0.42618457138193366
-      reg_lambda: 0.7948001406933319
-      subsample: 0.5509260099809907
-submit:
-  name: 5fold_lightgbm.csv
-  path: ../submit
+  catboost: res/models/5fold_catboost_models.pkl
+  lightgbm: res/models/5fold_lightgbm_models.pkl
+  xgboost: res/models/5fold_xgboost_models.pkl
+output:
+  path: output
+  name: ...

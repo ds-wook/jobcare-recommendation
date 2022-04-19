@@ -3,7 +3,7 @@ import pandas as pd
 from hydra.utils import to_absolute_path
 from omegaconf import DictConfig
 
-from data.elo_features import estimate_parameters, estimate_probas
+from features.elo import estimate_parameters, estimate_probas
 
 
 @hydra.main(config_path="../config/train/", config_name="model.yaml")

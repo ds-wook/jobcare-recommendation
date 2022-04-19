@@ -2,6 +2,10 @@ hydra:
   run:
     dir: ../log/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
   output_subdir: null
+experiment:
+  project: ds-wook/dacon-project
+  tags:
+    - CatBoost
 dataset:
   cat_features:
   - person_attribute_a_1
@@ -51,7 +55,10 @@ dataset:
   - contents_attribute_l_attribute_l_s
   - contents_attribute_l_attribute_l_m
   - contents_attribute_l_attribute_l_l
-  path: ../input/jobcare-recommendation/
+  path: input/jobcare/
+  code_d: 속성_D_코드.csv
+  code_h: 속성_H_코드.csv
+  code_l: 속성_L_코드.csv
   submit: sample_submission.csv
   test: test.csv
   train: train.csv
@@ -68,7 +75,4 @@ model:
   threshold: 0.4
   seed: 42
   verbose: 100
-submit:
-  name: ../5fold_catboost.csv
-  path: ../submit/
-  
+  path: res/models/5fold_catboost_models.pkl
