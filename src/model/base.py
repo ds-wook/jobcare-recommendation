@@ -83,7 +83,7 @@ class BaseModel(metaclass=ABCMeta):
             oof_preds[valid_idx] = model.predict_proba(X_valid)[:, 1]
 
             score = self.metric(
-                y_valid.values, oof_preds[valid_idx] > self.config.model.thershold
+                y_valid.values, oof_preds[valid_idx] > self.config.model.threshold
             )
             scores[f"fold_{fold}"] = score
 
@@ -94,7 +94,7 @@ class BaseModel(metaclass=ABCMeta):
 
             del X_train, X_valid, y_train, y_valid
 
-        oof_score = self.metric(train_y.values, oof_preds > self.config.model.thershold)
+        oof_score = self.metric(train_y.values, oof_preds > self.config.model.threshold)
         self.result = ModelResult(
             oof_preds=oof_preds,
             models=models,

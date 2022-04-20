@@ -4,19 +4,18 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from hydra.utils import get_original_cwd
+from numpy.typing import ArrayLike
 from omegaconf import DictConfig
-from tqdm import tqdm
-
-tqdm.pandas()
+from pandas import DataFrame, Series
 
 
 def preprocess_data(
-    df: pd.DataFrame,
+    df: DataFrame,
     cols_merge: List[Tuple[str, pd.DataFrame]],
     cols_equi: List[Tuple[str, str]],
     cols_drop: List[str],
     is_train: bool = True,
-) -> Tuple[pd.DataFrame, np.ndarray]:
+) -> Tuple[DataFrame, ArrayLike]:
     df = df.copy()
 
     y_data = None
@@ -39,7 +38,7 @@ def preprocess_data(
     return df, y_data
 
 
-def merge_codes(df: pd.DataFrame, df_code: pd.DataFrame, col: str) -> pd.DataFrame:
+def merge_codes(df: DataFrame, df_code: DataFrame, col: str) -> DataFrame:
     df = df.copy()
     df_code = df_code.copy()
     df_code = df_code.add_prefix(f"{col}_")
@@ -47,7 +46,7 @@ def merge_codes(df: pd.DataFrame, df_code: pd.DataFrame, col: str) -> pd.DataFra
     return pd.merge(df, df_code, how="left", on=col)
 
 
-def load_train_dataset(config: DictConfig) -> Tuple[pd.DataFrame, pd.Series]:
+def load_train_dataset(config: DictConfig) -> Tuple[DataFrame, Series]:
     """
     Load dataset
 
@@ -126,7 +125,7 @@ def load_train_dataset(config: DictConfig) -> Tuple[pd.DataFrame, pd.Series]:
     return train, target
 
 
-def load_test_dataset(config: DictConfig) -> pd.DataFrame:
+def load_test_dataset(config: DictConfig) -> DataFrame:
     """
     Load dataset
 

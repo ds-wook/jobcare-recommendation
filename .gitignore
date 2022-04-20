@@ -135,3 +135,5 @@ input/*
 output/*
 !output/.gitkeep
 log/outputs/*
+res/*
+!res/.gitkeep

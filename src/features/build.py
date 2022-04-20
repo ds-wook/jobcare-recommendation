@@ -4,14 +4,15 @@ from typing import List, Tuple
 import numpy as np
 import pandas as pd
 from lightgbm import LGBMClassifier
+from pandas import DataFrame, Series
 from shap import TreeExplainer
 from sklearn.model_selection import KFold
 from tqdm import tqdm
 
 
 def select_features(
-    train: pd.DataFrame, label: pd.Series, test: pd.DataFrame
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    train: DataFrame, label: Series, test: DataFrame
+) -> Tuple[DataFrame, DataFrame]:
 
     model = LGBMClassifier(random_state=42)
     logging.info(f"{model.__class__.__name__} Train Start!")
@@ -39,11 +40,11 @@ def select_features(
 
 
 def kfold_mean_encoding(
-    train_x: pd.DataFrame,
-    test_x: pd.DataFrame,
-    train_y: pd.Series,
+    train_x: DataFrame,
+    test_x: DataFrame,
+    train_y: Series,
     cat_features: List[str],
-) -> pd.DataFrame:
+) -> DataFrame:
     for c in tqdm(cat_features):
         data_tmp = pd.DataFrame({c: train_x[c], "target": train_y})
         target_mean = data_tmp.groupby(c)["target"].mean()
