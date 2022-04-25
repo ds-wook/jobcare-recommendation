@@ -7,27 +7,28 @@ from contextlib import contextmanager
 from typing import Any, Tuple, Union
 
 import numpy as np
-import pandas as pd
+from numpy.typing import ArrayLike
+from pandas import DataFrame
 from sklearn.metrics import f1_score
 
 
-def seed_everything(seed: int = 42):
+def seed_everything(seed: int = 42) -> None:
     random.seed(seed)
     os.environ["PYTHONASHSEED"] = str(seed)
     np.random.seed(seed)
 
 
 @contextmanager
-def timer(name: Any, logger: logging.getLogger):
+def timer(name: Any, logger: logging.getLogger) -> None:
     t0 = time.time()
     logging.debug(f"[{name}] start")
     yield
     logger.debug(f"[{name}] done in {time.time() - t0:.0f} s")
 
 
-def reduce_mem_usage(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
+def reduce_mem_usage(df: DataFrame, verbose: bool = True) -> DataFrame:
     numerics = ["int16", "int32", "int64", "float16", "float32", "float64"]
-    start_mem = df.memory_usage().sum() / 1024 ** 2
+    start_mem = df.memory_usage().sum() / 1024**2
 
     for col in df.columns:
         col_type = df[col].dtypes
@@ -58,7 +59,7 @@ def reduce_mem_usage(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
                 else:
                     df[col] = df[col].astype(np.float64)
 
-    end_mem = df.memory_usage().sum() / 1024 ** 2
+    end_mem = df.memory_usage().sum() / 1024**2
 
     if verbose:
         logging.info(
@@ -70,14 +71,14 @@ def reduce_mem_usage(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
 
 
 def f1_eval(
-    y_true: np.ndarray, y_pred: np.ndarray, thershold: float = 0.4
+    y_true: ArrayLike, y_pred: ArrayLike, thershold: float = 0.4
 ) -> Tuple[Union[str, float, bool]]:
     y_labels = (y_pred > thershold).astype(np.int8)
     return "f1", f1_score(y_labels, y_true), True
 
 
 def xgb_f1(
-    pred: np.ndarray, dtrain: np.ndarray, threshold: float = 0.4
+    pred: ArrayLike, dtrain: ArrayLike, threshold: float = 0.4
 ) -> Tuple[Union[str, float]]:
     y_true = dtrain.get_label()
     y_pred = (pred > threshold).astype(np.int8)

@@ -2,8 +2,9 @@ import gc
 import logging
 import pickle
 from abc import ABCMeta, abstractclassmethod
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, NamedTuple
+from typing import Any, Callable, Dict
 
 import numpy as np
 import pandas as pd
@@ -12,7 +13,8 @@ from omegaconf import DictConfig
 from sklearn.model_selection import StratifiedKFold
 
 
-class ModelResult(NamedTuple):
+@dataclass
+class ModelResult:
     oof_preds: np.ndarray
     models: Dict[str, Any]
     scores: Dict[str, float]
