@@ -5,6 +5,7 @@ import neptune.new.integrations.lightgbm as nep_lgbm_utils
 import neptune.new.integrations.xgboost as nep_xgb_utils
 import pandas as pd
 from catboost import CatBoostClassifier, Pool
+from interpret.glassbox import ExplainableBoostingClassifier
 from lightgbm import LGBMClassifier
 from neptune.new import Run
 from neptune.new.integrations.lightgbm import create_booster_summary
@@ -164,5 +165,28 @@ class CatBoostTrainer(BaseModel):
 
         self.run[f"catboost/fold_{fold}/best_iteration"] = model.best_iteration_
         self.run[f"catboost/fold_{fold}/best_score"] = model.best_score_
+
+        return model
+
+
+class EBMTrainer(BaseModel):
+    def __init__(self, config: Dict[str, Any], metric: Callable, search: bool = False):
+        super().__init__(config, metric, search)
+
+    def _train(
+        self,
+        X_train: pd.DataFrame,
+        y_train: pd.Series,
+        X_valid: pd.DataFrame,
+        y_valid: pd.Series,
+        fold: int,
+    ) -> ExplainableBoostingClassifier:
+        """method train"""
+        model = ExplainableBoostingClassifier(
+            random_state=self.config.model.seed,
+            **self.config.model.params,
+        )
+
+        model.fit(X_train, y_train)
 
         return model

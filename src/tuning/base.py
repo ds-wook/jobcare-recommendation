@@ -9,8 +9,8 @@ import neptune.new.integrations.optuna as optuna_utils
 import optuna
 from hydra.utils import get_original_cwd
 from neptune.new import Run
-from omegaconf import DictConfig, OmegaConf
-from optuna.pruners import HyperbandPruner
+from omegaconf import DictConfig, OmegaConf, open_dict
+from optuna.pruners import BasePruner, HyperbandPruner, MedianPruner, NopPruner
 from optuna.samplers import BaseSampler, CmaEsSampler, RandomSampler, TPESampler
 from optuna.study import Study
 from optuna.trial import FrozenTrial
@@ -46,6 +46,7 @@ class BaseTuner(metaclass=ABCMeta):
             study
         """
         try:
+            print(self.config.search)
             # define study
             neptune_callback = optuna_utils.NeptuneCallback(
                 self.run,
@@ -56,13 +57,11 @@ class BaseTuner(metaclass=ABCMeta):
             study = optuna.create_study(
                 study_name=self.config.search.study_name,
                 direction=self.config.search.direction,
-                sampler=create_sampler(
-                    mode=self.config.search.mode, seed=self.config.search.seed
+                sampler=_create_sampler(
+                    config=self.config.search.get("sampler", None),
                 ),
-                pruner=HyperbandPruner(
-                    min_resource=self.config.search.min_resource,
-                    max_resource=self.config.search.max_resource,
-                    reduction_factor=self.config.search.reduction_factor,
+                pruner=_create_pruner(
+                    config=self.config.search.get("pruner", None),
                 ),
             )
 
@@ -83,13 +82,11 @@ class BaseTuner(metaclass=ABCMeta):
             study = optuna.create_study(
                 study_name=self.config.search.study_name,
                 direction=self.config.search.direction,
-                sampler=create_sampler(
-                    mode=self.config.search.mode, seed=self.config.search.seed
+                sampler=_create_sampler(
+                    config=self.config.search.get("sampler", None),
                 ),
-                pruner=HyperbandPruner(
-                    min_resource=self.config.search.min_resource,
-                    max_resource=self.config.search.max_resource,
-                    reduction_factor=self.config.search.reduction_factor,
+                pruner=_create_pruner(
+                    config=self.config.search.get("pruner", None),
                 ),
             )
 
@@ -134,7 +131,7 @@ class BaseTuner(metaclass=ABCMeta):
             logging.info(f"    '{key}': {value},")
 
 
-def create_sampler(mode: str, seed: int) -> BaseSampler:
+def _create_sampler(config: DictConfig) -> BaseSampler:
     """
     Create sampler
 
@@ -144,13 +141,43 @@ def create_sampler(mode: str, seed: int) -> BaseSampler:
     Returns:
         BaseSampler: sampler
     """
+    # config update
+    with open_dict(config):
+        mode = config.pop("type")
+
     if mode == "random":
-        sampler = RandomSampler(seed=seed)
+        sampler = RandomSampler(**config)
     elif mode == "tpe":
-        sampler = TPESampler(seed=seed)
+        sampler = TPESampler(**config)
     elif mode == "cma":
-        sampler = CmaEsSampler(seed=seed)
+        sampler = CmaEsSampler(**config)
     else:
         raise ValueError(f"Unknown sampler mode: {mode}")
 
     return sampler
+
+
+def _create_pruner(config: DictConfig) -> BasePruner:
+    """
+    Create pruner
+
+    Args:
+        pruner_mode: pruner mode
+        seed: seed
+    Returns:
+        HyperbandPruner: pruner
+    """
+    # config update
+    with open_dict(config):
+        mode = config.pop("type")
+
+    if mode == "hyperband":
+        pruner = HyperbandPruner(**config)
+    elif mode == "median":
+        pruner = MedianPruner(**config)
+    elif mode == "nop":
+        pruner = NopPruner()
+    else:
+        raise ValueError(f"Unknown pruner mode: {mode}")
+
+    return pruner

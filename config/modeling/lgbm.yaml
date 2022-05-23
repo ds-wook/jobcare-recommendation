@@ -14,8 +14,6 @@ dataset:
   - person_prefer_h_1
   - person_prefer_h_2
   - person_prefer_h_3
-  - person_rn
-  - contents_rn
   - contents_attribute_i
   - contents_attribute_a
   - contents_attribute_j_1
@@ -54,6 +52,9 @@ dataset:
   - contents_attribute_l_attribute_l_m
   - contents_attribute_l_attribute_l_l
   path: input/jobcare/
+  code_d: 속성_D_코드.csv
+  code_h: 속성_H_코드.csv
+  code_l: 속성_L_코드.csv
   submit: sample_submission.csv
   test: test.csv
   train: train.csv

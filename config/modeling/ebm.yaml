@@ -2,6 +2,10 @@ hydra:
   run:
     dir: ../log/outputs/${now:%Y-%m-%d}/${now:%H-%M-%S}
   output_subdir: null
+experiment:
+  project: ds-wook/dacon-project
+  tags:
+    - CatBoost
 dataset:
   cat_features:
   - person_attribute_a_1
@@ -59,94 +63,16 @@ dataset:
   test: test.csv
   train: train.csv
   target: target
-experiment:
-  project: ds-wook/dacon-project
-  tags:
-    lightgbm:
-    - LightGBM
-    - KFold
-    - 잡케어
-    - Optimization
-    xgboost:
-    - XGBoost
-    - KFold
-    - 잡케어
-    - Optimization
-
 model:
   fold: 5
+  params:
+    learning_rate: 0.05
+    eval_metric: F1
+    loss_function: Logloss
+    iterations: 10000
+    one_hot_max_size: 4
+    used_ram_limit: 4gb
   threshold: 0.4
-  select: lightgbm
-  lightgbm:
-    params:
-      boosting_type: gbdt
-      n_estimators: 10000
-      n_jobs: -1
-      objective: binary
-      learning_rate:
-      - 0.03
-      - 0.1
-      num_leaves:
-      - 4
-      - 64
-      max_depth:
-      - 4
-      - 16 
-      subsample:
-      - 0.1
-      - 1.0 
-      colsample_bytree:
-      - 0.1
-      - 1.0 
-      reg_alpha:
-      - 0.01
-      - 0.1 
-      reg_lambda:
-      - 0.01
-      - 0.1
-    xgboost:
-      params:
-        n_estimators: 10000
-        n_jobs: -1
-        objective: reg:squarederror
-        random_state: 42
-        colsample_bytree:
-        - 0.4
-        - 1.0
-        gamma:
-        - 0.01
-        - 0.1
-        learning_rate:
-        - 0.001
-        - 0.01
-        max_depth:
-        - 2
-        - 10
-        min_child_weight:
-        - 3
-        - 10
-        reg_alpha:
-        - 0.1
-        - 0.5
-        reg_lambda:
-        - 0.3
-        - 1.0
-        subsample:
-        - 0.3
-        - 1.0
-search:
-  trials: 100
-  direction: maximize
-  params: best_params.yaml
-  study_name: Optuna Search
-  sampler:
-    type: tpe
-    n_startup_trials: 15
-    multivariate: true
-    group: true
-    constant_liar: true
-  pruner:
-    type: median
-    n_startup_trials: 15
-    n_warmup_steps: 3
-    interval_steps: 4
+  seed: 42
+  verbose: 100
+  path: res/models/5fold_catboost_models.pkl
